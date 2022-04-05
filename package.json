@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node app.js",
-    "dev": "nodemon app.js"
+    "dev": "nodemon --max_old_space_size=8000 app.js"
   },
   "repository": {
     "type": "git",
@@ -30,6 +30,7 @@
     "helmet": "^3.22.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.15",
+    "pg": "^8.6.0",
     "validator": "^13.0.0",
     "winston": "^3.2.1"
   },

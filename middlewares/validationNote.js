@@ -1,0 +1,49 @@
+const { celebrate, Joi } = require('celebrate');
+
+const objectIdValidation = Joi.string().required().max(24)
+  .regex(/^[0-9]+$/i);
+
+const validationGetNotes = celebrate({
+  headers: Joi.object().keys({
+    cookie: Joi.string().required(),
+  }).unknown(true),
+});
+
+const validationAddNote = celebrate({
+  body: Joi.object().keys({
+    theme: Joi.string().required().min(1).max(20),
+    text: Joi.string().required().min(1).max(1200),
+    example: Joi.string().required().min(1).max(150),
+  }).unknown(true),
+  headers: Joi.object().keys({
+    cookie: Joi.string().required(),
+  }).unknown(true),
+});
+
+const validationPatchNotes = celebrate({
+  body: Joi.object().keys({
+    id: objectIdValidation,
+    theme: Joi.string().required().min(1).max(20),
+    text: Joi.string().required().min(1).max(1200),
+    example: Joi.string().required().min(1).max(150),
+  }).unknown(true),
+  headers: Joi.object().keys({
+    cookie: Joi.string().required(),
+  }).unknown(true),
+});
+
+const validationDeleteNotes = celebrate({
+  params: Joi.object().keys({
+    noteId: objectIdValidation,
+  }).unknown(true),
+  headers: Joi.object().keys({
+    cookie: Joi.string().required(),
+  }).unknown(true),
+});
+
+module.exports = {
+  validationGetNotes,
+  validationAddNote,
+  validationPatchNotes,
+  validationDeleteNotes,
+};
