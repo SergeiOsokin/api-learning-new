@@ -29,7 +29,7 @@ const patchWord = (req, res, next) => {
   client.connect();// подключаемся к БД
   client.query('UPDATE words SET foreign_word = ($1), russian_word = ($2), category_word_id = ($3) WHERE id=($4)', [foreignWord, russianWord, categoryWordId, id])
     .then(() => {
-      res.send({ message: 'Изменено. Обновите страницу' });
+      res.send({ message: 'Успешно изменено' });
       client.end();
     })
     .catch((err) => {
@@ -71,5 +71,5 @@ const deleteWord = (req, res, next) => {
 };
 
 module.exports = {
-  getWords, patchWord, addWord, deleteWord
+  getWords, patchWord, addWord, deleteWord,
 };

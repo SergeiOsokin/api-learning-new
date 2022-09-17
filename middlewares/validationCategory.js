@@ -1,9 +1,6 @@
 const { celebrate, Joi } = require('celebrate');
 
-const objectIdValidation = Joi.string().required().max(24)
-  .regex(/^[0-9]+$/i);
-
-  const cyrillicValidation = Joi.string().required().min(1).max(30)
+const cyrillicValidation = Joi.string().required().min(1).max(30)
   .regex(/^[а-яё]+$/i);
 
 const validationGetCategories = celebrate({
@@ -14,8 +11,14 @@ const validationGetCategories = celebrate({
 
 const validationAddCategory = celebrate({
   body: Joi.object().keys({
-    categoryWord: cyrillicValidation
+    categoryWord: cyrillicValidation,
   }).unknown(true),
+  headers: Joi.object().keys({
+    cookie: Joi.string().required(),
+  }).unknown(true),
+});
+
+const validationDeleteCategory = celebrate({
   headers: Joi.object().keys({
     cookie: Joi.string().required(),
   }).unknown(true),
@@ -24,4 +27,5 @@ const validationAddCategory = celebrate({
 module.exports = {
   validationAddCategory,
   validationGetCategories,
+  validationDeleteCategory,
 };

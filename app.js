@@ -7,7 +7,7 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const { limiter } = require('./rateLimit-config');
 
-const { routerUsers, routerWords, routerNotes, routerCategory } = require('./routes/index');
+const { routerWords, routerNotes, routerCategory } = require('./routes/index');
 const { createUser, login } = require('./controllers/user');
 const { auth } = require('./middlewares/auth');
 const { deleteCookie } = require('./middlewares/deleteCookie');
@@ -20,11 +20,12 @@ const { PORT } = require('./config');
 
 const whitelist = [
   'http://localhost:8080',
-  'http://localhost:8080/',
-  'http://localhost:3000',
-  'http://127.0.0.1:5500',
-  'http://127.0.0.1:3000',
-  'http://127.0.0.1:8080'
+  // 'http://localhost:8080/',
+  // 'http://localhost:3000',
+  // 'http://127.0.0.1:5500',
+  // 'http://127.0.0.1:3000',
+  // 'http://localhost:3001',
+  // 'http://127.0.0.1:8080',
 ];
 
 const corsOptions = {

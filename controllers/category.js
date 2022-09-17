@@ -37,6 +37,21 @@ const addCategory = (req, res, next) => {
     });
 };
 
+const deleteCategory = (req, res, next) => {
+  const client = new Client(DATABASE_URL);
+  client.connect();
+  client
+    .query('DELETE FROM category_word WHERE id = ($1)', [req.params.id])
+    .then(() => {
+      res.send({ message: 'Категория удалена' });
+      client.end();
+    })
+    .catch((err) => {
+      client.end();
+      next(err);
+    });
+};
+
 module.exports = {
-  addCategory, getCategories
+  addCategory, getCategories, deleteCategory,
 };
