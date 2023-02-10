@@ -8,14 +8,14 @@ const {
   validationGetNotes, validationAddNote, validationPatchNotes, validationDeleteNotes,
 } = require('../middlewares/validationNote');
 
-routerNotes.post('/addnote', validationAddNote, addNote);
+routerNotes.post('/add', validationAddNote, addNote);
 
-routerNotes.get('/notethemes', validationGetNotes, getNoteThemes);
+routerNotes.get('/themes', validationGetNotes, getNoteThemes);
 
-routerNotes.get('/getnote/:noteId', validationGetNotes, getNote);
+routerNotes.get('/get/:noteId', validationGetNotes, getNote);
 
-routerNotes.patch('/patchnote', validationPatchNotes, patchNote);
+routerNotes.patch('/patch', validationPatchNotes, patchNote);
 
-routerNotes.delete('/deletenote/:noteId', validationDeleteNotes, deleteNote);
+routerNotes.delete('/delete/:noteId', validationDeleteNotes, deleteNote);
 
 module.exports = routerNotes;

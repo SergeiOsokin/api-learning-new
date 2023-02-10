@@ -10,6 +10,7 @@ const getWords = (req, res, next) => {
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
   client.query(sqlReq, [userId])
+    // eslint-disable-next-line consistent-return
     .then((result) => {
       if (result.rowCount === 0) return res.send({ message: notWords, data: [] });
       res.send({ data: result.rows });

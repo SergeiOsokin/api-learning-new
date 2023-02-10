@@ -1,21 +1,20 @@
 const routerWords = require('express').Router();
 const {
-  getWords, patchWord, addWord, deleteWord, addCategory, getCategories
+  getWords, patchWord, addWord, deleteWord,
 } = require('../controllers/word');
 const {
-  validationGetWords,
   validationAddWord,
   validationDeleteWord,
-  validationPatchWord
+  validationPatchWord,
 } = require('../middlewares/validationWords');
 
 // routerWords.get('/wordslist', validationGetWords, getWords);
-routerWords.get('/wordslist', getWords);
+routerWords.get('/list', getWords);
 
-routerWords.post('/addword', validationAddWord, addWord);
+routerWords.post('/add', validationAddWord, addWord);
 
-routerWords.patch('/patchword/:id', validationPatchWord, patchWord);
+routerWords.patch('/patch/:id', validationPatchWord, patchWord);
 
-routerWords.delete('/deleteword/:wordId', validationDeleteWord, deleteWord);
+routerWords.delete('/delete/:wordId', validationDeleteWord, deleteWord);
 
 module.exports = routerWords;

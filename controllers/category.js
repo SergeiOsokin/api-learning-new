@@ -9,6 +9,7 @@ const getCategories = (req, res, next) => {
   const client = new Client(DATABASE_URL);
   client.connect();
   client.query('SELECT id, category FROM category_word WHERE user_id = ($1)', [userId])
+    // eslint-disable-next-line consistent-return
     .then((result) => {
       if (result.rowCount === 0) return res.send({ message: notWords, data: [] });
       res.send({ data: result.rows });
