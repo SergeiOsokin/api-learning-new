@@ -16,10 +16,11 @@ const { validationCreateUser, validationLogin } = require('./middlewares/validat
 const { errorMiddleware } = require('./middlewares/errorMiddlewares');
 const { NotFound } = require('./errors/errors');
 const { resourceNotFound } = require('./const');
-const { PORT } = require('./config');
+const { PORT, NODE_ENV } = require('./config');
 
 const whitelist = [
   'http://localhost:8080',
+  'http://localhost:3000',
   'http://learnew.online',
   'https://learnew.online',
   'http://learnew.ru',
@@ -64,5 +65,5 @@ app.use(errorMiddleware);
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
-  console.log('Begin listening^');
+  console.log(`Begin listening ${PORT} ${NODE_ENV}`);
 });
