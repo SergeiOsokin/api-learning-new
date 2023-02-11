@@ -3,10 +3,12 @@ const notFoundUserEmail = 'Email в базе не найден';
 const wrongPasswordOrLogin = 'Не правильный логин или пароль';
 const alreadyExist = 'Email уже используется.';
 const errorInArticleId = 'Ошибка в присланном идентификаторе статьи';
-const needHeader = 'Требуется авторизация';
+const needHeader = 'Не авторизованы';
 const badToken = 'Проблема с токеном';
 const dataNotFound = 'Данные в системе не найдены';
 const permissionText = 'Недостаточно прав';
+const regSuccsessful = 'Зарегистрирован. Теперь можете войти'
+const notWords = 'У вас пока нет добавленых слов'
 
 module.exports = {
   resourceNotFound,
@@ -18,4 +20,6 @@ module.exports = {
   badToken,
   dataNotFound,
   permissionText,
+  regSuccsessful,
+  notWords,
 };

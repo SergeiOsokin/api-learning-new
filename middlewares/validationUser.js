@@ -6,7 +6,6 @@ const emailValidation = Joi.string().required()
 const validationCreateUser = celebrate({
   body: Joi.object().keys({
     email: emailValidation,
-    name: Joi.string().required().min(2).max(30),
     password: Joi.string().required().min(6).max(30),
   }).unknown(true),
 });

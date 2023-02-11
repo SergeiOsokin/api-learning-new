@@ -1,4 +1,6 @@
 const routerUsers = require('./user');
-const routerArticles = require('./article');
+const routerWords = require('./word');
+const routerNotes = require('./note');
+const routerCategory = require('./category');
 
-module.exports = { routerUsers, routerArticles };
+module.exports = { routerUsers, routerWords, routerNotes, routerCategory };
