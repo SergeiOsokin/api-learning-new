@@ -27,7 +27,7 @@ const whitelist = [
   'http://www.learnew.ru',
   'https://wwww.learnew.ru',
   'http://learnew.ru',
-  'https://wwww.learnew.ru',
+  'https://learnew.ru',
 ];
 
 const corsOptions = {
