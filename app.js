@@ -20,11 +20,12 @@ const { PORT, NODE_ENV } = require('./config');
 
 const whitelist = [
   'http://localhost:8080',
+  'http://127.0.0.1:5500',
   'http://localhost:3000',
   'http://learnew.online',
   'https://learnew.online',
-  'http://learnew.ru',
-  'https://learnew.ru',
+  'http://www.learnew.ru',
+  'https://wwww.learnew.ru',
 ];
 
 const corsOptions = {
@@ -35,8 +36,8 @@ const corsOptions = {
       callback(new Error('Not allowed by CORS'));
     }
   },
-  // origin: '*',
   credentials: true,
+  exposedHeaders: ['set-cookie'],
 };
 
 const app = express();

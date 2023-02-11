@@ -4,6 +4,7 @@ const { JWT_SECRET } = require('../config');
 const { needHeader, badToken } = require('../const');
 
 const auth = (req, res, next) => {
+  console.log(req.cookies)
   const cookie = req.cookies.jwt;
   if (!cookie) { // проверяем что заголовок есть
     throw new NotHeaders(needHeader);
