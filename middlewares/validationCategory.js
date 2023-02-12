@@ -7,6 +7,11 @@ const validationGetCategories = celebrate({
   headers: Joi.object().keys({
     cookie: Joi.string().required(),
   }).unknown(true),
+}, {
+  abortEarly: false,
+  messages: {
+    'string.required': '{#label} Обязательный параметр',
+  },
 });
 
 const validationAddCategory = celebrate({
@@ -16,12 +21,23 @@ const validationAddCategory = celebrate({
   headers: Joi.object().keys({
     cookie: Joi.string().required(),
   }).unknown(true),
+}, {
+  abortEarly: false,
+  messages: {
+    'string.pattern.base': '{#label} Укажите на русском языке',
+    'string.required': '{#label} Обязательный параметр',
+  },
 });
 
 const validationDeleteCategory = celebrate({
   headers: Joi.object().keys({
     cookie: Joi.string().required(),
   }).unknown(true),
+}, {
+  abortEarly: false,
+  messages: {
+    'string.required': '{#label} Обязательный параметр',
+  },
 });
 
 module.exports = {
