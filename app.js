@@ -54,7 +54,7 @@ app.use(helmet());
 app.use(requestLogger);
 
 app.post('/api/signup', validationCreateUser, createUser);
-app.post('/signin', validationLogin, login);
+app.post('/api/signin', validationLogin, login);
 
 app.use('/api/words', auth, routerWords);
 app.use('/api/notes', auth, routerNotes);
