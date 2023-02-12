@@ -28,18 +28,21 @@ const whitelist = [
   'https://wwww.learnew.ru',
   'http://learnew.ru',
   'https://learnew.ru',
+  'https://learnew.ru/',
+  'https://learnew.ru/api',
 ];
 
 const corsOptions = {
   origin: (origin, callback) => {
     if (whitelist.indexOf(origin) !== -1) {
+      console.log(origin);
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
-  exposedHeaders: ['set-cookie'],
+  // exposedHeaders: ['set-cookie'],
 };
 
 const app = express();
