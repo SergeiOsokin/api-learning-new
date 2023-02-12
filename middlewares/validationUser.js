@@ -8,6 +8,14 @@ const validationCreateUser = celebrate({
     email: emailValidation,
     password: Joi.string().required().min(6).max(30),
   }).unknown(true),
+}, {
+  abortEarly: false,
+  messages: {
+    'string.max': '{#label} Максимум {#limit} символов',
+    'string.min': '{#label} Минимум {#limit} символа',
+    'string.required': '{#label} Обязательный параметр',
+    'string.pattern.base': '{#label} Некорректный email',
+  },
 });
 
 const validationLogin = celebrate({
@@ -15,6 +23,14 @@ const validationLogin = celebrate({
     email: emailValidation,
     password: Joi.string().required().min(6).max(30),
   }).unknown(true),
+}, {
+  abortEarly: false,
+  messages: {
+    'string.max': '{#label} Максимум {#limit} символов',
+    'string.min': '{#label} Минимум {#limit} символа',
+    'string.required': '{#label} Обязательный параметр',
+    'string.pattern.base': '{#label} Некорректный email',
+  },
 });
 
 const validationGetUser = celebrate({
@@ -24,6 +40,12 @@ const validationGetUser = celebrate({
   headers: Joi.object().keys({
     cookie: Joi.string().required(),
   }).unknown(true),
+}, {
+  abortEarly: false,
+  messages: {
+    'string.max': '{#label} Максимум {#limit} символов',
+    'string.required': '{#label} Обязательный параметр',
+  },
 });
 
 module.exports = {
