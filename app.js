@@ -53,13 +53,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(helmet());
 app.use(requestLogger);
 
-app.post('/signup', validationCreateUser, createUser);
+app.post('/api/signup', validationCreateUser, createUser);
 app.post('/signin', validationLogin, login);
 
-app.use('/words', auth, routerWords);
-app.use('/notes', auth, routerNotes);
-app.use('/category', auth, routerCategory);
-app.delete('/deletecookie', auth, deleteCookie);
+app.use('/api/words', auth, routerWords);
+app.use('/api/notes', auth, routerNotes);
+app.use('/api/category', auth, routerCategory);
+app.delete('/api/deletecookie', auth, deleteCookie);
 
 app.use(errorLogger);
 app.use('*', (req, res, next) => next(new NotFound(resourceNotFound)));
