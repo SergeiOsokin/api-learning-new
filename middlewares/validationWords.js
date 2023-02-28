@@ -4,10 +4,10 @@ const idValidation = Joi.string().required().max(24)
   .regex(/^[0-9]+$/i);
 
 const cyrillicValidation = Joi.string().required().min(1).max(30)
-  .pattern(new RegExp(/^[а-яё\s]+$/i));
+  .pattern(new RegExp(/^[а-яё\s,()-]+$/i));
 
 const latinValidation = Joi.string().required().min(1).max(30)
-  .regex(/^[a-z\s]+$/i);
+  .regex(/^[a-z\s,()-]+$/i);
 
 const validationGetWords = celebrate({
   headers: Joi.object().keys({
