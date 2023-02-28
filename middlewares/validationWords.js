@@ -30,7 +30,7 @@ const validationAddWord = celebrate({
     'string.max': '{#label} Максимум {#limit} символов',
     'string.min': '{#label} Минимум {#limit} символа',
     'string.required': '{#label} Обязательный параметр',
-    'string.pattern.base': '{#label} Измените язык',
+    'string.pattern.base': 'Проверьте язык для поля {#label}. Доступные символы: , () -',
   },
 });
 
@@ -49,7 +49,7 @@ const validationPatchWord = celebrate({
     'string.max': '{#label} Максимум {#limit} символов',
     'string.min': '{#label} Минимум {#limit} символа',
     'string.required': '{#label} Обязательный параметр',
-    'string.pattern.base': '{#label} Измените язык',
+    'string.pattern.base': 'Проверьте язык для поля {#label}. Доступные символы: , () -',
   },
 });
 
