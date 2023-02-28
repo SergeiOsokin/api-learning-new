@@ -28,10 +28,25 @@ const patchWord = (req, res, next) => {
   } = req.body;
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
-  client.query('UPDATE words SET foreign_word = ($1), russian_word = ($2), category_word_id = ($3) WHERE id=($4)', [foreignWord, russianWord, categoryWordId, id])
-    .then(() => {
-      res.send({ message: 'Успешно изменено' });
-      client.end();
+
+  client
+    .query('select foreign_word from words where foreign_word = ($1)', [foreignWord])
+    .then((result) => {
+      if (result.rowCount !== 0) {
+        res.send({ message: 'У вас уже есть это слово на инстранном' });
+        client.end();
+        return;
+      }
+      client
+        .query('UPDATE words SET foreign_word = ($1), russian_word = ($2), category_word_id = ($3) WHERE id=($4)', [foreignWord, russianWord, categoryWordId, id])
+        .then(() => {
+          res.send({ message: 'Успешно изменено' });
+          client.end();
+        })
+        .catch((err) => {
+          client.end();
+          next(err);
+        });
     })
     .catch((err) => {
       client.end();
@@ -44,11 +59,25 @@ const addWord = (req, res, next) => {
   const userId = req.user._id;
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
+
   client
-    .query('INSERT INTO words (foreign_word, russian_word, user_id, category_word_id) VALUES ($1, $2, $3, $4)', [word.foreignWord, word.russianWord, userId, word.categoryWord])
-    .then(() => {
-      res.send({ message: 'Слово добавлено' });
-      client.end();
+    .query('select foreign_word from words where foreign_word = ($1)', [word.foreignWord])
+    .then((result) => {
+      if (result.rowCount !== 0) {
+        res.send({ message: 'У вас уже есть это слово на инстранном' });
+        client.end();
+        return;
+      }
+      client
+        .query('INSERT INTO words (foreign_word, russian_word, user_id, category_word_id) VALUES ($1, $2, $3, $4)', [word.foreignWord, word.russianWord, userId, word.categoryWord])
+        .then(() => {
+          res.send({ message: 'Слово добавлено' });
+          client.end();
+        })
+        .catch((err) => {
+          client.end();
+          next(err);
+        });
     })
     .catch((err) => {
       client.end();
