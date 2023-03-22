@@ -30,23 +30,10 @@ const patchWord = (req, res, next) => {
   client.connect();// подключаемся к БД
 
   client
-    .query('select foreign_word from words where foreign_word = ($1)', [foreignWord])
-    .then((result) => {
-      if (result.rowCount !== 0) {
-        res.send({ message: 'У вас уже есть это слово на инстранном' });
-        client.end();
-        return;
-      }
-      client
-        .query('UPDATE words SET foreign_word = ($1), russian_word = ($2), category_word_id = ($3) WHERE id=($4)', [foreignWord, russianWord, categoryWordId, id])
-        .then(() => {
-          res.send({ message: 'Успешно изменено' });
-          client.end();
-        })
-        .catch((err) => {
-          client.end();
-          next(err);
-        });
+    .query('UPDATE words SET foreign_word = ($1), russian_word = ($2), category_word_id = ($3) WHERE id=($4)', [foreignWord, russianWord, categoryWordId, id])
+    .then(() => {
+      res.send({ message: 'Успешно изменено' });
+      client.end();
     })
     .catch((err) => {
       client.end();
