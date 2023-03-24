@@ -17,6 +17,7 @@ const { errorMiddleware } = require('./middlewares/errorMiddlewares');
 const { NotFound } = require('./errors/errors');
 const { resourceNotFound } = require('./const');
 const { PORT, NODE_ENV } = require('./config');
+const routerTaks = require('./routes/task');
 
 const whitelist = [
   'http://localhost:8080',
@@ -59,9 +60,15 @@ app.post('/api/signup', validationCreateUser, createUser);
 app.post('/api/signin', validationLogin, login);
 
 app.use('/api/words', auth, routerWords);
+
 app.use('/api/notes', auth, routerNotes);
+
 app.use('/api/category', auth, routerCategory);
+
+app.use('/api/task', auth, routerTaks);
+
 app.delete('/api/deletecookie', auth, deleteCookie);
+
 
 app.use(errorLogger);
 app.use('*', (req, res, next) => next(new NotFound(resourceNotFound)));
