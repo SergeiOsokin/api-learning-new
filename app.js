@@ -8,7 +8,7 @@ const cookieParser = require('cookie-parser');
 const { limiter } = require('./rateLimit-config');
 
 const { routerWords, routerNotes, routerCategory } = require('./routes/index');
-const { createUser, login } = require('./controllers/user');
+const { createUser, login, getUser } = require('./controllers/user');
 const { auth } = require('./middlewares/auth');
 const { deleteCookie } = require('./middlewares/deleteCookie');
 const { requestLogger, errorLogger } = require('./middlewares/loggers');
@@ -58,6 +58,7 @@ app.use(requestLogger);
 
 app.post('/api/signup', validationCreateUser, createUser);
 app.post('/api/signin', validationLogin, login);
+app.get('/api/users', getUser);
 
 app.use('/api/words', auth, routerWords);
 

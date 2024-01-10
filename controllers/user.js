@@ -82,6 +82,21 @@ const createUser = (req, res, next) => {
     });
 };
 
+const getUser = (req, res, next) => {
+  const client = new Client(DATABASE_URL);
+  client.connect();// подключаемся к БД
+
+  client.query('SELECT * from users')
+    .then((select) => {
+      res.send({ select });
+      return client.end();
+    })
+    .catch((err) => {
+      client.end();
+      next(err);
+    });
+};
+
 module.exports = {
-  createUser, login,
+  createUser, login, getUser,
 };
