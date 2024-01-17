@@ -2,12 +2,12 @@ const { celebrate, Joi } = require('celebrate');
 
 const validationCreateTask = celebrate({
   body: Joi.object().keys({
-    theme: Joi.string().required().max(100),
-    words: Joi.string().required().max(500),
-    rules: Joi.string().required().max(500),
+    theme: Joi.string().required().max(20),
+    words: Joi.string().required().max(200),
+    rules: Joi.string().required().max(2000),
     translate: Joi.string().required().max(500),
     read: Joi.string().required().max(500),
-    other: Joi.string().required().max(500),
+    other: Joi.string().required().max(300),
   }).unknown(true),
   headers: Joi.object().keys({
     cookie: Joi.string().required(),
@@ -26,12 +26,12 @@ const validationPatchTask = celebrate({
     taskId: Joi.number().required(),
   }).unknown(true),
   body: Joi.object().keys({
-    theme: Joi.string().required().max(100),
-    words: Joi.string().required().max(500),
-    rules: Joi.string().required().max(500),
+    theme: Joi.string().required().max(20),
+    words: Joi.string().required().max(200),
+    rules: Joi.string().required().max(2000),
     translate: Joi.string().required().max(500),
     read: Joi.string().required().max(500),
-    other: Joi.string().required().max(500),
+    other: Joi.string().required().max(300),
   }).unknown(true),
   headers: Joi.object().keys({
     cookie: Joi.string().required(),

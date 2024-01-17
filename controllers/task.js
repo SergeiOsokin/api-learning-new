@@ -49,7 +49,10 @@ const getTaskTeacher = (req, res, next) => {
 
   client
     .query(
-      'SELECT id, theme, words, rules, translate, read, other FROM task WHERE user_id = ($1) and id = ($2)', [userId, taskId],
+      `SELECT task.id, task.theme, task.words, task.rules, task.translate, task.read, task.other, users.email as users
+        FROM task
+        INNER join users ON task.user_id = users.id
+        WHERE task.user_id = ($1) and task.id = ($2)`, [userId, taskId],
     )
     .then((result) => {
       res.send(result.rows);
