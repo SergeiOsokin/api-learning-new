@@ -64,6 +64,46 @@ const getTaskTeacher = (req, res, next) => {
     });
 };
 
+const getTaskThemesStudent = (req, res, next) => {
+  const userId = req.user._id;
+  const client = new Client(DATABASE_URL);
+  client.connect();// подключаемся к БД
+
+  client
+    .query(
+      'SELECT id, task_id, user_id FROM task_student WHERE user_id = ($1)', [userId],
+    )
+    .then((result) => {
+      res.send(result.rows);
+      client.end();
+    })
+    .catch((err) => {
+      client.end();
+      next(err);
+    });
+};
+
+const appointTask = (req, res, next) => {
+  const { taskId } = req.params;
+  const userId = req.user._id;
+  const client = new Client(DATABASE_URL);
+  client.connect();// подключаемся к БД
+
+  client
+    .query(
+      'INSERT INTO task_student (task_id, user_id) VALUES ($1, $2)',
+      [taskId, userId],
+    )
+    .then(() => {
+      res.send({ message: 'Задание создано' });
+      client.end();
+    })
+    .catch((err) => {
+      client.end();
+      next(err);
+    });
+};
+
 const patchTask = (req, res, next) => {
   const userId = req.user._id;
   const {
@@ -91,7 +131,7 @@ const patchTask = (req, res, next) => {
     });
 };
 
-const deleteNote = (req, res, next) => {
+const deleteTask = (req, res, next) => {
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
   client
@@ -107,5 +147,11 @@ const deleteNote = (req, res, next) => {
 };
 
 module.exports = {
-  createTask, getTaskThemesTeacher, getTaskTeacher, patchTask, deleteNote,
+  createTask,
+  getTaskThemesTeacher,
+  getTaskTeacher,
+  patchTask,
+  deleteTask,
+  appointTask,
+  getTaskThemesStudent,
 };
