@@ -1,6 +1,7 @@
 const { Client } = require('pg');
 const { DATABASE_URL } = require('../config');
 
+// Учитель
 const createTask = (req, res, next) => {
   const task = req.body;
   const userId = req.user._id;
@@ -42,7 +43,6 @@ const getTaskThemesTeacher = (req, res, next) => {
 };
 
 const getTaskTeacher = (req, res, next) => {
-  const userId = req.user._id;
   const { taskId } = req.params;
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
@@ -51,29 +51,12 @@ const getTaskTeacher = (req, res, next) => {
     .query(
       `SELECT task.id, task.theme, task.words, task.rules, task.translate, task.read, task.other, users.email as users
         FROM task
-        INNER join users ON task.user_id = users.id
-        WHERE task.user_id = ($1) and task.id = ($2)`, [userId, taskId],
+        LEFT join task_student ON task_student.task_id = task.id
+        LEFT join users ON users.id = task_student.user_id
+        WHERE task.id = ($1)`, [taskId],
     )
     .then((result) => {
-      res.send(result.rows);
-      client.end();
-    })
-    .catch((err) => {
-      client.end();
-      next(err);
-    });
-};
-
-const getTaskThemesStudent = (req, res, next) => {
-  const userId = req.user._id;
-  const client = new Client(DATABASE_URL);
-  client.connect();// подключаемся к БД
-
-  client
-    .query(
-      'SELECT id, task_id, user_id FROM task_student WHERE user_id = ($1)', [userId],
-    )
-    .then((result) => {
+      console.log(result);
       res.send(result.rows);
       client.end();
     })
@@ -85,18 +68,32 @@ const getTaskThemesStudent = (req, res, next) => {
 
 const appointTask = (req, res, next) => {
   const { taskId } = req.params;
-  const userId = req.user._id;
+  const userEmail = req.body.student;
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
 
-  client
-    .query(
-      'INSERT INTO task_student (task_id, user_id) VALUES ($1, $2)',
-      [taskId, userId],
-    )
-    .then(() => {
-      res.send({ message: 'Задание создано' });
-      client.end();
+  client.query('SELECT email from users where email=$1', [userEmail])
+    .then((select) => {
+      if (select.rows.length === 0) {
+        res.send({ message: 'Логин пользователя не найден' });
+        return client.end();
+      }
+      client
+        .query(
+          `INSERT INTO task_student (task_id, user_id)
+          SELECT task.id, users.id
+          FROM task, users
+          WHERE task.id = $1 and users.email = $2`,
+          [taskId, userEmail],
+        )
+        .then(() => {
+          res.send({ message: 'Задание назначено' });
+          client.end();
+        })
+        .catch((err) => {
+          client.end();
+          next(err);
+        });
     })
     .catch((err) => {
       client.end();
@@ -135,7 +132,15 @@ const deleteTask = (req, res, next) => {
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
   client
-    .query('DELETE FROM task WHERE id = ($1)', [req.params.taskId])
+    .query(
+      `DELETE from task_student WHERE task_student.task_id = ($1)
+    `, [req.params.taskId],
+    );
+  client
+    .query(
+      `DELETE from task WHERE task.id = ($1)
+    `, [req.params.taskId],
+    )
     .then(() => {
       res.send({ message: 'Задание удалено' });
       client.end();
@@ -145,6 +150,26 @@ const deleteTask = (req, res, next) => {
       next(err);
     });
 };
+// Студент
+const getTaskThemesStudent = (req, res, next) => {
+  const userId = req.user._id;
+  const client = new Client(DATABASE_URL);
+  client.connect();// подключаемся к БД
+
+  client
+    .query(
+      'SELECT id, task_id, user_id FROM task_student WHERE user_id = ($1)', [userId],
+    )
+    .then((result) => {
+      res.send(result.rows);
+      client.end();
+    })
+    .catch((err) => {
+      client.end();
+      next(err);
+    });
+};
+
 
 module.exports = {
   createTask,
