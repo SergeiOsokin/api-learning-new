@@ -1,7 +1,7 @@
 const { celebrate, Joi } = require('celebrate');
 
 const emailValidation = Joi.string().required()
-  .regex(/[a-zA-Z0-1\W\D]{1,}@[[a-zA-Z0-1\W\D]{1,}\.[a-zA-Z]{2,3}/i);
+  .regex(/[a-zA-Z0-9\W\D]{1,}@[[a-zA-Z0-1\W\D]{1,}\.[a-zA-Z]{2,3}/i);
 
 const validationCreateUser = celebrate({
   body: Joi.object().keys({
