@@ -18,6 +18,7 @@ const { NotFound } = require('./errors/errors');
 const { resourceNotFound } = require('./const');
 const { PORT, NODE_ENV } = require('./config');
 const routerTaks = require('./routes/task');
+const routerHomework = require('./routes/homework');
 
 const whitelist = [
   'http://localhost:8080',
@@ -67,6 +68,7 @@ app.use('/api/notes', auth, routerNotes);
 app.use('/api/category', auth, routerCategory);
 
 app.use('/api/task', auth, routerTaks);
+app.use('/api/homework', auth, routerHomework);
 
 app.delete('/api/deletecookie', auth, deleteCookie);
 

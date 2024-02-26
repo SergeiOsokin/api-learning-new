@@ -56,7 +56,6 @@ const getTaskTeacher = (req, res, next) => {
         WHERE task.id = ($1)`, [taskId],
     )
     .then((result) => {
-      console.log(result);
       res.send(result.rows);
       client.end();
     })
@@ -150,26 +149,6 @@ const deleteTask = (req, res, next) => {
       next(err);
     });
 };
-// Студент
-const getTaskThemesStudent = (req, res, next) => {
-  const userId = req.user._id;
-  const client = new Client(DATABASE_URL);
-  client.connect();// подключаемся к БД
-
-  client
-    .query(
-      'SELECT id, task_id, user_id FROM task_student WHERE user_id = ($1)', [userId],
-    )
-    .then((result) => {
-      res.send(result.rows);
-      client.end();
-    })
-    .catch((err) => {
-      client.end();
-      next(err);
-    });
-};
-
 
 module.exports = {
   createTask,
@@ -178,5 +157,4 @@ module.exports = {
   patchTask,
   deleteTask,
   appointTask,
-  getTaskThemesStudent,
 };

@@ -1,7 +1,6 @@
 const routerTaks = require('express').Router();
 const {
   createTask, getTaskThemesTeacher, getTaskTeacher, patchTask, deleteTask, appointTask,
-  getTaskThemesStudent,
 } = require('../controllers/task');
 
 const {
@@ -10,8 +9,6 @@ const {
 } = require('../middlewares/validationTask');
 
 routerTaks.post('/create', validationCreateTask, createTask);
-
-routerTaks.get('/themesStudent', getTaskThemesStudent);
 
 routerTaks.get('/themes', validationGetTaskThemesTeacher, getTaskThemesTeacher);
 routerTaks.get('/theme/:taskId', validationGetTaskTeacher, getTaskTeacher);
