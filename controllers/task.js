@@ -49,11 +49,13 @@ const getTaskTeacher = (req, res, next) => {
 
   client
     .query(
-      `SELECT task.id, task.theme, task.words, task.rules, task.translate, task.read, task.other, users.email as users
+      `SELECT task.id, task.theme, task.words, task.rules, task.translate, task.read, task.other, array_agg(users.email) as users
         FROM task
         LEFT join task_student ON task_student.task_id = task.id
         LEFT join users ON users.id = task_student.user_id
-        WHERE task.id = ($1)`, [taskId],
+        WHERE task.id = ($1)
+        GROUP BY task.id
+        `, [taskId],
     )
     .then((result) => {
       res.send(result.rows);
@@ -67,38 +69,63 @@ const getTaskTeacher = (req, res, next) => {
 
 const appointTask = (req, res, next) => {
   const { taskId } = req.params;
-  const userEmail = req.body.student;
+  const userEmail = req.body.student.split(';');
+  const userEmail1 = userEmail[0];
+  const userEmail2 = userEmail[1] === undefined ? 'null' : userEmail[1];
+  const userEmail3 = userEmail[2] === undefined ? 'null' : userEmail[2];
+  const userEmail4 = userEmail[3] === undefined ? 'null' : userEmail[3];
+  const userEmail5 = userEmail[4] === undefined ? 'null' : userEmail[4];
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
 
-  client.query('SELECT email from users where email=$1', [userEmail])
-    .then((select) => {
-      if (select.rows.length === 0) {
-        res.send({ message: 'Логин пользователя не найден' });
-        return client.end();
-      }
-      client
-        .query(
-          `INSERT INTO task_student (task_id, user_id)
-          SELECT task.id, users.id
-          FROM task, users
-          WHERE task.id = $1 and users.email = $2`,
-          [taskId, userEmail],
-        )
-        .then(() => {
-          res.send({ message: 'Задание назначено' });
-          client.end();
-        })
-        .catch((err) => {
-          client.end();
-          next(err);
-        });
+  console.log(userEmail2);
+  // нет проверки на уникальность, можно добавлять одно и тоже задание на того же ученика
+  client
+    .query(
+      `INSERT INTO task_student (task_id, user_id)
+      SELECT task.id, users.id
+      FROM task, users
+      WHERE task.id = $1 and users.email in ($2,$3,$4,$5,$6)`,
+      [taskId, userEmail1, userEmail2, userEmail3, userEmail4, userEmail5],
+    )
+    .then(() => {
+      res.send({ message: 'Задание назначено' });
+      client.end();
     })
     .catch((err) => {
       client.end();
       next(err);
     });
 };
+
+// client.query('SELECT email from users where email=$1', [userEmail])
+//   .then((select) => {
+//     if (select.rows.length === 0) {
+//       res.send({ message: 'Логин пользователя не найден' });
+//       return client.end();
+//     }
+//     client
+//       .query(
+//         `INSERT INTO task_student (task_id, user_id)
+//         SELECT task.id, users.id
+//         FROM task, users
+//         WHERE task.id = $1 and users.email in ($2)`,
+//         [taskId, userEmail],
+//       )
+//       .then(() => {
+//         res.send({ message: 'Задание назначено' });
+//         client.end();
+//       })
+//       .catch((err) => {
+//         client.end();
+//         next(err);
+//       });
+//   })
+//   .catch((err) => {
+//     client.end();
+//     next(err);
+//   });
+// };
 
 const patchTask = (req, res, next) => {
   const userId = req.user._id;
