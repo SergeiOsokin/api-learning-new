@@ -78,7 +78,6 @@ const appointTask = (req, res, next) => {
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
 
-  console.log(userEmail2);
   // нет проверки на уникальность, можно добавлять одно и тоже задание на того же ученика
   client
     .query(
