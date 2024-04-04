@@ -1,7 +1,7 @@
 {
   "name": "news-search-api",
   "version": "1.0.9",
-  "description": "Backend for diploma project",
+  "description": "Backend for learnew project",
   "main": "index.js",
   "scripts": {
     "start": "node app.js",

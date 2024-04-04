@@ -24,7 +24,7 @@ const validationAddCategory = celebrate({
 }, {
   abortEarly: false,
   messages: {
-    'string.pattern.base': '{#label} Укажите на русском языке',
+    'string.pattern.base': '{#label} Укажите заметку без пробелов',
     'string.required': '{#label} Обязательный параметр',
   },
 });
