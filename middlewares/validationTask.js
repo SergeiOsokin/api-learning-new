@@ -3,7 +3,7 @@ const { celebrate, Joi } = require('celebrate');
 const validationCreateTask = celebrate({
   body: Joi.object().keys({
     theme: Joi.string().required().max(20),
-    words: Joi.string().required().max(200),
+    words: Joi.string().required().max(1000),
     rules: Joi.string().required().max(2000),
     translate: Joi.string().required().max(500),
     read: Joi.string().required().max(500),
