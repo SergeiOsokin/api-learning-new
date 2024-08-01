@@ -5,11 +5,65 @@ const { notWords } = require('../const');
 // const { dataNotFound, permissionText } = require('../const');
 
 const getWords = (req, res, next) => {
-  const sqlReq = 'SELECT words.id, words.foreign_word, words.russian_word, words.category_word_id, category_word.category FROM words JOIN category_word ON category_word.id = words.category_word_id AND words.user_id = ($1);';
+  const sqlReq = `
+  SELECT words.id, words.foreign_word, words.russian_word, words.category_word_id, category_word.category
+  FROM words JOIN category_word ON category_word.id = words.category_word_id AND words.user_id = ($1)`;
+
+  const sqlReq2 = `
+  SELECT words.id, words.foreign_word, words.russian_word, words.category_word_id, category_word.category
+  FROM words JOIN category_word ON category_word.id = words.category_word_id AND words.user_id = ($1)
+  WHERE category_word.category = ($2);`;
+
   const userId = req.user._id;
+  const { category } = req.query;
+
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
-  client.query(sqlReq, [userId])
+
+  if (category === 'null') {
+    console.log('1')
+    client.query(sqlReq, [userId])
+      // eslint-disable-next-line consistent-return
+      .then((result) => {
+        if (result.rowCount === 0) return res.send({ message: notWords, data: [] });
+        res.send({ data: result.rows });
+        client.end();
+      })
+      .catch((err) => {
+        client.end();
+        next(err);
+      });
+  } else if (category !== 'null') {
+    console.log('2')
+    client.query(sqlReq2, [userId, category])
+      // eslint-disable-next-line consistent-return
+      .then((result) => {
+        if (result.rowCount === 0) return res.send({ message: notWords, data: [] });
+        res.send({ data: result.rows });
+        client.end();
+      })
+      .catch((err) => {
+        client.end();
+        next(err);
+      });
+  }
+
+
+};
+
+const getWordsByCategory = (req, res, next) => {
+  const sqlReq2 = `
+  SELECT words.id, words.foreign_word, words.russian_word, words.category_word_id, category_word.category
+  FROM words JOIN category_word ON category_word.id = words.category_word_id AND words.user_id = ($1);
+  WHERE category_word.category = ($2);`;
+
+  const userId = req.user._id;
+  const { category } = req.query;
+  console.log(category === 'null');
+  const client = new Client(DATABASE_URL);
+  client.connect();// подключаемся к БД
+
+  client.query(sqlReq2, [userId, category])
     // eslint-disable-next-line consistent-return
     .then((result) => {
       if (result.rowCount === 0) return res.send({ message: notWords, data: [] });
@@ -88,5 +142,5 @@ const deleteWord = (req, res, next) => {
 };
 
 module.exports = {
-  getWords, patchWord, addWord, deleteWord,
+  getWords, patchWord, addWord, deleteWord, getWordsByCategory,
 };

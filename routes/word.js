@@ -1,6 +1,6 @@
 const routerWords = require('express').Router();
 const {
-  getWords, patchWord, addWord, deleteWord,
+  getWords, patchWord, addWord, deleteWord, getWordsByCategory,
 } = require('../controllers/word');
 const {
   validationAddWord,
@@ -10,6 +10,7 @@ const {
 
 // routerWords.get('/wordslist', validationGetWords, getWords);
 routerWords.get('/list', getWords);
+routerWords.get('/lists', getWordsByCategory);
 
 routerWords.post('/add', validationAddWord, addWord);
 
