@@ -21,7 +21,6 @@ const getWords = (req, res, next) => {
   client.connect();// подключаемся к БД
 
   if (category === 'null') {
-    console.log('1')
     client.query(sqlReq, [userId])
       // eslint-disable-next-line consistent-return
       .then((result) => {
@@ -34,7 +33,6 @@ const getWords = (req, res, next) => {
         next(err);
       });
   } else if (category !== 'null') {
-    console.log('2')
     client.query(sqlReq2, [userId, category])
       // eslint-disable-next-line consistent-return
       .then((result) => {
@@ -47,8 +45,6 @@ const getWords = (req, res, next) => {
         next(err);
       });
   }
-
-
 };
 
 const getWordsByCategory = (req, res, next) => {
