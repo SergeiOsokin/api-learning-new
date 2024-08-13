@@ -14,7 +14,7 @@ const login = (req, res, next) => {
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
   const { email, password: passwordCame } = req.body;
-  client.query('SELECT id, email, password from users where email=$1', [email])
+  client.query('SELECT id, email, password from users where email=$1', [email.toLowerCase()])
     .then((select) => {
       if (!select.rows.length) {
         client.end();
@@ -55,7 +55,7 @@ const createUser = (req, res, next) => {
   const {
     email, password,
   } = req.body;
-  client.query('SELECT email from users where email=$1', [email])
+  client.query('SELECT email from users where email=$1', [email.toLowerCase()])
     .then((select) => {
       if (select.rows.length >= 1) {
         res.send({ message: alreadyExist });
@@ -65,7 +65,7 @@ const createUser = (req, res, next) => {
       bcrypt.hash(password, 10)
         .then((hash) => {
           client
-            .query('INSERT INTO users (email, password) values ($1, $2)', [email, hash]) // записываем информацию о пользователе
+            .query('INSERT INTO users (email, password) values ($1, $2)', [email.toLowerCase(), hash]) // записываем информацию о пользователе
             .then(() => {
               res.send({ message: regSuccsessful });
             })
