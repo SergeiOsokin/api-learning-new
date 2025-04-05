@@ -12,7 +12,8 @@ routerNotes.post('/add', validationAddNote, addNote);
 
 routerNotes.get('/themes', validationGetNotes, getNoteThemes);
 
-routerNotes.get('/get/:noteId', validationGetNotes, getNote);
+// routerNotes.get('/get/:noteId', validationGetNotes, getNote);
+routerNotes.get('/get', validationGetNotes, getNote);
 
 routerNotes.patch('/patch', validationPatchNotes, patchNote);
 
