@@ -1,7 +1,7 @@
 const routerNotes = require('express').Router();
 
 const {
-  getNote, patchNote, addNote, deleteNote, getNoteThemes,
+  getNote, getNotes, patchNote, addNote, deleteNote, getNoteThemes,
 } = require('../controllers/note');
 
 const {
@@ -12,8 +12,8 @@ routerNotes.post('/add', validationAddNote, addNote);
 
 routerNotes.get('/themes', validationGetNotes, getNoteThemes);
 
-// routerNotes.get('/get/:noteId', validationGetNotes, getNote);
-routerNotes.get('/get', validationGetNotes, getNote);
+routerNotes.get('/get/:noteId', validationGetNotes, getNote);
+routerNotes.get('/get', validationGetNotes, getNotes);
 
 routerNotes.patch('/patch', validationPatchNotes, patchNote);
 

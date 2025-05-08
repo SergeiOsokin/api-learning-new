@@ -35,25 +35,27 @@ const getNoteThemes = (req, res, next) => {
       next(err);
     });
 };
+
 // Получить одну заметку
-// const getNote = (req, res, next) => {
-//   const userId = req.user._id;
-//   const { noteId } = req.params;
-//   const client = new Client(DATABASE_URL);
-//   client.connect();// подключаемся к БД
-//   client.query('SELECT id, theme, text, example FROM notes WHERE id = ($1) and user_id = ($2)', [noteId, userId])
-//     .then((result) => {
-//       res.send(result.rows);
-//       client.end();
-//     })
-//     .catch((err) => {
-//       client.end();
-//       next(err);
-//     });
-// };
+const getNote = (req, res, next) => {
+  // console.log('тут');
+  const userId = req.user._id;
+  const { noteId } = req.params;
+  const client = new Client(DATABASE_URL);
+  client.connect();// подключаемся к БД
+  client.query('SELECT id, theme, text, example FROM notes WHERE id = ($1) and user_id = ($2)', [noteId, userId])
+    .then((result) => {
+      res.send(result.rows);
+      client.end();
+    })
+    .catch((err) => {
+      client.end();
+      next(err);
+    });
+};
 
 // Переделать на нормальное полуение всех заметок: заголовок, текст
-const getNote = (req, res, next) => {
+const getNotes = (req, res, next) => {
   const userId = req.user._id;
   // const { noteId } = req.params;
   const client = new Client(DATABASE_URL);
@@ -110,5 +112,5 @@ const deleteNote = (req, res, next) => {
 };
 
 module.exports = {
-  getNote, patchNote, addNote, deleteNote, getNoteThemes,
+  getNote, getNotes, patchNote, addNote, deleteNote, getNoteThemes,
 };
