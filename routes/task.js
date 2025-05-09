@@ -10,7 +10,7 @@ const {
 
 routerTaks.post('/create', validationCreateTask, createTask);
 
-routerTaks.get('/themes', validationGetTaskThemesTeacher, getTaskThemesTeacher);
+routerTaks.get('/all', validationGetTaskThemesTeacher, getTaskThemesTeacher);
 routerTaks.get('/theme/:taskId', validationGetTaskTeacher, getTaskTeacher);
 
 routerTaks.post('/appoint/:taskId', appointTask);

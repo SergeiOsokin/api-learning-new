@@ -30,7 +30,7 @@ const getTaskThemesTeacher = (req, res, next) => {
 
   client
     .query(
-      'SELECT id, theme FROM task WHERE user_id = ($1)', [userId],
+      'SELECT * FROM task WHERE user_id = ($1)', [userId],
     )
     .then((result) => {
       res.send(result.rows);
