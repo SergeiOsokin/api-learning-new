@@ -73,14 +73,15 @@ const getNotes = (req, res, next) => {
 
 const patchNote = (req, res, next) => {
   const userId = req.user._id;
+  const { noteId } = req.params;
   const {
-    id, theme, text, example,
+    theme, text, example,
   } = req.body;
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
-  client.query('UPDATE notes SET theme = ($1), text = ($2), example = ($3) WHERE id=($4)', [theme, text, example, id])
+  client.query('UPDATE notes SET theme = ($1), text = ($2), example = ($3) WHERE id=($4)', [theme, text, example, noteId])
     .then(() => {
-      client.query('SELECT id, theme, text, example FROM notes WHERE id = ($1) and user_id = ($2)', [id, userId])
+      client.query('SELECT id, theme, text, example FROM notes WHERE id = ($1) and user_id = ($2)', [noteId, userId])
         .then((result) => {
           res.send({ message: 'Заметка изменена', data: result.rows });
           client.end();
