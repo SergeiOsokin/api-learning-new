@@ -68,8 +68,9 @@ const getTaskTeacher = (req, res, next) => {
 };
 
 const appointTask = (req, res, next) => {
+  console.log(req);
   const { taskId } = req.params;
-  const userEmail = req.body.student.split(';');
+  const userEmail = req.body.users.split(';');
   const userEmail1 = userEmail[0];
   const userEmail2 = userEmail[1] === undefined ? 'null' : userEmail[1];
   const userEmail3 = userEmail[2] === undefined ? 'null' : userEmail[2];
@@ -77,7 +78,6 @@ const appointTask = (req, res, next) => {
   const userEmail5 = userEmail[4] === undefined ? 'null' : userEmail[4];
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
-
   // нет проверки на уникальность, можно добавлять одно и тоже задание на того же ученика
   client
     .query(
@@ -96,6 +96,28 @@ const appointTask = (req, res, next) => {
       next(err);
     });
 };
+
+const unappointTask = (req, res, next) => {
+  console.log(req.body);
+  // const { taskId } = req.params;
+  // const userId = req.body;
+  // const client = new Client(DATABASE_URL);
+  // client.connect();// подключаемся к БД
+  // client
+  //   .query(
+  //     'SELECT from task_student WHERE task_student.task_id = ($1) and task_student.user_id = (select id from user where email = ($2))',
+  //     [taskId, userId],
+  //   )
+  //   .then(() => {
+  //     res.send({ message: 'Задание с ученика снято' });
+  //     client.end();
+  //   })
+  //   .catch((err) => {
+  //     client.end();
+  //     next(err);
+  //   });
+};
+
 
 // client.query('SELECT email from users where email=$1', [userEmail])
 //   .then((select) => {
@@ -183,4 +205,5 @@ module.exports = {
   patchTask,
   deleteTask,
   appointTask,
+  unappointTask,
 };
