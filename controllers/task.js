@@ -98,24 +98,25 @@ const appointTask = (req, res, next) => {
 };
 
 const unappointTask = (req, res, next) => {
-  console.log(req.body);
-  // const { taskId } = req.params;
-  // const userId = req.body;
-  // const client = new Client(DATABASE_URL);
-  // client.connect();// подключаемся к БД
-  // client
-  //   .query(
-  //     'SELECT from task_student WHERE task_student.task_id = ($1) and task_student.user_id = (select id from user where email = ($2))',
-  //     [taskId, userId],
-  //   )
-  //   .then(() => {
-  //     res.send({ message: 'Задание с ученика снято' });
-  //     client.end();
-  //   })
-  //   .catch((err) => {
-  //     client.end();
-  //     next(err);
-  //   });
+  console.log(req.body.user);
+  console.log(req.params);
+  const { taskId } = req.params;
+  const userId = req.body.user;
+  const client = new Client(DATABASE_URL);
+  client.connect();// подключаемся к БД
+  client
+    .query(
+      'DELETE from task_student WHERE task_student.task_id = ($1) and task_student.user_id = (select id from users where users.email = ($2))',
+      [taskId, userId],
+    )
+    .then(() => {
+      res.send({ message: 'Задание с ученика снято' });
+      client.end();
+    })
+    .catch((err) => {
+      client.end();
+      next(err);
+    });
 };
 
 
