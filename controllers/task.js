@@ -30,7 +30,13 @@ const getTaskThemesTeacher = (req, res, next) => {
 
   client
     .query(
-      'SELECT * FROM task WHERE user_id = ($1)', [userId],
+      // 'SELECT * FROM task WHERE user_id = ($1)', [userId],
+      `SELECT task.id, task.theme, task.words, task.rules, task.translate, task.read, task.other, array_agg(users.email) as users
+        FROM task
+        LEFT join task_student ON task_student.task_id = task.id
+        LEFT join users ON users.id = task_student.user_id
+        WHERE task.user_id = ($1)
+        GROUP BY task.id`, [userId],
     )
     .then((result) => {
       res.send(result.rows);
