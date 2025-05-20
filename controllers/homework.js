@@ -9,7 +9,7 @@ const getHomeworkThemes = (req, res, next) => {
 
   client
     .query(
-      `SELECT task.id, task.theme
+      `SELECT *
       FROM task_student
       JOIN task ON task.id = task_student.task_id
       WHERE task_student.user_id = ($1)`,

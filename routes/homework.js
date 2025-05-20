@@ -9,7 +9,7 @@ const {
   validationGetHomework,
 } = require('../middlewares/validationHomework');
 
-routerHomework.get('/themes', validationGetHomeworkThemes, getHomeworkThemes);
+routerHomework.get('/themes/all', validationGetHomeworkThemes, getHomeworkThemes);
 routerHomework.get('/theme/:taskId', validationGetHomework, getHomework);
 
 module.exports = routerHomework;
