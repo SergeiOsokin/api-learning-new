@@ -62,7 +62,7 @@ const getNotes = (req, res, next) => {
   client.connect();// подключаемся к БД
   client.query('SELECT id, theme, text, example FROM notes WHERE user_id = ($1)', [userId])
     .then((result) => {
-      res.send({ data: result.rows });
+      res.send({ data: result.rows, status: 200 });
       client.end();
     })
     .catch((err) => {
