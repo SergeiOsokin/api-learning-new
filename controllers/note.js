@@ -3,6 +3,7 @@ const { DATABASE_URL } = require('../config');
 // const { PermissionError, ArticleNotExist } = require('../errors/errors');
 // const { dataNotFound, permissionText } = require('../const');
 
+// Добавить поле дата создания
 const addNote = (req, res, next) => {
   const note = req.body;
   const userId = req.user._id;
@@ -35,7 +36,9 @@ const getNoteThemes = (req, res, next) => {
     });
 };
 
+// Получить одну заметку
 const getNote = (req, res, next) => {
+  // console.log('тут');
   const userId = req.user._id;
   const { noteId } = req.params;
   const client = new Client(DATABASE_URL);
@@ -51,16 +54,34 @@ const getNote = (req, res, next) => {
     });
 };
 
+// Переделать на нормальное полуение всех заметок: заголовок, текст
+const getNotes = (req, res, next) => {
+  const userId = req.user._id;
+  // const { noteId } = req.params;
+  const client = new Client(DATABASE_URL);
+  client.connect();// подключаемся к БД
+  client.query('SELECT id, theme, text, example, date_create FROM notes WHERE user_id = ($1)', [userId])
+    .then((result) => {
+      res.send({ data: result.rows, status: 200 });
+      client.end();
+    })
+    .catch((err) => {
+      client.end();
+      next(err);
+    });
+};
+
 const patchNote = (req, res, next) => {
   const userId = req.user._id;
+  const { noteId } = req.params;
   const {
-    id, theme, text, example,
+    theme, text, example,
   } = req.body;
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
-  client.query('UPDATE notes SET theme = ($1), text = ($2), example = ($3) WHERE id=($4)', [theme, text, example, id])
+  client.query('UPDATE notes SET theme = ($1), text = ($2), example = ($3) WHERE id=($4)', [theme, text, example, noteId])
     .then(() => {
-      client.query('SELECT id, theme, text, example FROM notes WHERE id = ($1) and user_id = ($2)', [id, userId])
+      client.query('SELECT id, theme, text, example FROM notes WHERE id = ($1) and user_id = ($2)', [noteId, userId])
         .then((result) => {
           res.send({ message: 'Заметка изменена', data: result.rows });
           client.end();
@@ -92,5 +113,5 @@ const deleteNote = (req, res, next) => {
 };
 
 module.exports = {
-  getNote, patchNote, addNote, deleteNote, getNoteThemes,
+  getNote, getNotes, patchNote, addNote, deleteNote, getNoteThemes,
 };

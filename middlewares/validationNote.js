@@ -33,8 +33,10 @@ const validationAddNote = celebrate({
 });
 
 const validationPatchNotes = celebrate({
+  params: Joi.object().keys({
+    noteId: Joi.number().required(),
+  }).unknown(true),
   body: Joi.object().keys({
-    id: objectIdValidation,
     theme: Joi.string().required().min(1).max(20),
     text: Joi.string().required().min(1).max(1200),
     example: Joi.string().required().min(5).max(150),

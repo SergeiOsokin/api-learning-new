@@ -12,7 +12,7 @@ const getCategories = (req, res, next) => {
     // eslint-disable-next-line consistent-return
     .then((result) => {
       if (result.rowCount === 0) return res.send({ message: notWords, data: [] });
-      res.send({ data: result.rows });
+      res.send({ data: result.rows, status: 200 });
       client.end();
     })
     .catch((err) => {

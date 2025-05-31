@@ -10,11 +10,11 @@ const createTask = (req, res, next) => {
 
   client
     .query(
-      'INSERT INTO task (theme, words, rules, translate, read, other, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7)',
-      [task.theme, task.words, task.rules, task.translate, task.read, task.other, userId],
+      'INSERT INTO task (theme, words, rules, translate, read, other, date_create, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
+      [task.theme, task.words, task.rules, task.translate, task.read, task.other, task.date, userId],
     )
     .then(() => {
-      res.send({ message: 'Задание создано' });
+      res.send({ message: 'Задание создано', status: 200 });
       client.end();
     })
     .catch((err) => {
@@ -30,7 +30,13 @@ const getTaskThemesTeacher = (req, res, next) => {
 
   client
     .query(
-      'SELECT id, theme FROM task WHERE user_id = ($1)', [userId],
+      // 'SELECT * FROM task WHERE user_id = ($1)', [userId],
+      `SELECT task.id, task.theme, task.words, task.rules, task.translate, task.read, task.other, task.date_create, array_agg(users.email) as users
+        FROM task
+        LEFT join task_student ON task_student.task_id = task.id
+        LEFT join users ON users.id = task_student.user_id
+        WHERE task.user_id = ($1)
+        GROUP BY task.id`, [userId],
     )
     .then((result) => {
       res.send(result.rows);
@@ -49,7 +55,7 @@ const getTaskTeacher = (req, res, next) => {
 
   client
     .query(
-      `SELECT task.id, task.theme, task.words, task.rules, task.translate, task.read, task.other, array_agg(users.email) as users
+      `SELECT task.id, task.theme, task.words, task.rules, task.translate, task.read, task.other, task.date_create, array_agg(users.email) as users
         FROM task
         LEFT join task_student ON task_student.task_id = task.id
         LEFT join users ON users.id = task_student.user_id
@@ -68,8 +74,9 @@ const getTaskTeacher = (req, res, next) => {
 };
 
 const appointTask = (req, res, next) => {
+  console.log(req);
   const { taskId } = req.params;
-  const userEmail = req.body.student.split(';');
+  const userEmail = req.body.users.split(';');
   const userEmail1 = userEmail[0];
   const userEmail2 = userEmail[1] === undefined ? 'null' : userEmail[1];
   const userEmail3 = userEmail[2] === undefined ? 'null' : userEmail[2];
@@ -77,7 +84,6 @@ const appointTask = (req, res, next) => {
   const userEmail5 = userEmail[4] === undefined ? 'null' : userEmail[4];
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
-
   // нет проверки на уникальность, можно добавлять одно и тоже задание на того же ученика
   client
     .query(
@@ -96,6 +102,29 @@ const appointTask = (req, res, next) => {
       next(err);
     });
 };
+
+const unappointTask = (req, res, next) => {
+  console.log(req.body.user);
+  console.log(req.params);
+  const { taskId } = req.params;
+  const userId = req.body.user;
+  const client = new Client(DATABASE_URL);
+  client.connect();// подключаемся к БД
+  client
+    .query(
+      'DELETE from task_student WHERE task_student.task_id = ($1) and task_student.user_id = (select id from users where users.email = ($2))',
+      [taskId, userId],
+    )
+    .then(() => {
+      res.send({ message: 'Задание с ученика снято' });
+      client.end();
+    })
+    .catch((err) => {
+      client.end();
+      next(err);
+    });
+};
+
 
 // client.query('SELECT email from users where email=$1', [userEmail])
 //   .then((select) => {
@@ -129,15 +158,15 @@ const appointTask = (req, res, next) => {
 const patchTask = (req, res, next) => {
   const userId = req.user._id;
   const {
-    theme, words, rules, translate, read, other,
+    theme, words, rules, translate, read, other, date,
   } = req.body;
   const { taskId } = req.params;
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
-  client.query('UPDATE task SET theme = ($1), words = ($2), rules = ($3), translate = ($4), read = ($5), other = ($6) WHERE id=($7)',
-    [theme, words, rules, translate, read, other, taskId])
+  client.query('UPDATE task SET theme = ($1), words = ($2), rules = ($3), translate = ($4), read = ($5), other = ($6), date_create = ($7) WHERE id=($8)',
+    [theme, words, rules, translate, read, other, date, taskId])
     .then(() => {
-      client.query('SELECT id, theme, words, rules, translate, read, other FROM task WHERE user_id = ($1) and id = ($2)', [userId, taskId])
+      client.query('SELECT id, theme, words, rules, translate, read, other, date_create FROM task WHERE user_id = ($1) and id = ($2)', [userId, taskId])
         .then((result) => {
           res.send({ message: 'Задание изменено', data: result.rows });
           client.end();
@@ -183,4 +212,5 @@ module.exports = {
   patchTask,
   deleteTask,
   appointTask,
+  unappointTask,
 };

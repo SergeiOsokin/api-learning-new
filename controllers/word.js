@@ -25,7 +25,7 @@ const getWords = (req, res, next) => {
       // eslint-disable-next-line consistent-return
       .then((result) => {
         if (result.rowCount === 0) return res.send({ message: notWords, data: [] });
-        res.send({ data: result.rows });
+        res.send({ data: result.rows, status: 200 });
         client.end();
       })
       .catch((err) => {
@@ -37,7 +37,7 @@ const getWords = (req, res, next) => {
       // eslint-disable-next-line consistent-return
       .then((result) => {
         if (result.rowCount === 0) return res.send({ message: notWords, data: [] });
-        res.send({ data: result.rows });
+        res.send({ data: result.rows, status: 200 });
         client.end();
       })
       .catch((err) => {
@@ -55,7 +55,6 @@ const getWordsByCategory = (req, res, next) => {
 
   const userId = req.user._id;
   const { category } = req.query;
-  console.log(category === 'null');
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
 
@@ -63,7 +62,7 @@ const getWordsByCategory = (req, res, next) => {
     // eslint-disable-next-line consistent-return
     .then((result) => {
       if (result.rowCount === 0) return res.send({ message: notWords, data: [] });
-      res.send({ data: result.rows });
+      res.send({ data: result.rows, status: 200 });
       client.end();
     })
     .catch((err) => {
