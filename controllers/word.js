@@ -126,7 +126,12 @@ const deleteWord = (req, res, next) => {
   client.connect();// подключаемся к БД
   client
     .query('DELETE FROM words WHERE id = ($1)', [req.params.wordId])
-    .then(() => {
+    .then((result) => {
+      if (!result.rowCount) {
+        res.send({ error: 'Слово не найдено' });
+        client.end();
+        return;
+      }
       res.send({ message: 'Слово удалено' });
       client.end();
     })
