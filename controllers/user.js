@@ -2,7 +2,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { Client } = require('pg');
 const { notFoundUserEmail, wrongPasswordOrLogin } = require('../const');
-const { BadAuthData } = require('../errors/errors');
+const { BadAuthData, NotFound } = require('../errors/errors');
+const { getPassword } = require('../middlewares/genPassword');
 // const { findUserByCredentials } = require('../models/user');
 // const { NotFound } = require('../errors/errors');
 const { alreadyExist, regSuccsessful } = require('../const');
@@ -40,6 +41,41 @@ const login = (req, res, next) => {
             .send({ user: id })
             .end();
           client.end();
+        })
+        .catch(next);
+    })
+    .catch((err) => {
+      client.end();
+      next(err);
+    });
+};
+
+const resetPassword = (req, res, next) => {
+  const client = new Client(DATABASE_URL);
+  client.connect();// подключаемся к БД
+  const { email } = req.body;
+  client.query('SELECT email from users where email=$1', [email.toLowerCase()])
+    .then((select) => {
+      // if (!select.rows.length) {
+      //   client.end();
+      //   throw new NotFound(notFoundUserEmail);
+      // }
+
+      const pass = getPassword(10);
+      console.log(pass);
+
+      // client.connect();// подключаемся к БД
+      bcrypt.hash(pass, 10)
+        .then((hash) => {
+          client
+            .query('UPDATE users SET password = ($1) WHERE email=($1)', [hash, email]) // обновляем пароль
+            .then(() => {
+              res.send({ message: regSuccsessful });
+            })
+            .catch((err) => {
+              next(err);
+            })
+            .then(() => client.end());
         })
         .catch(next);
     })
@@ -98,5 +134,5 @@ const getUser = (req, res, next) => {
 };
 
 module.exports = {
-  createUser, login, getUser,
+  createUser, login, getUser, resetPassword,
 };
