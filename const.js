@@ -7,8 +7,9 @@ const needHeader = 'Не авторизованы';
 const badToken = 'Проблема с токеном. Выполните вход';
 const dataNotFound = 'Данные в системе не найдены';
 const permissionText = 'Недостаточно прав';
-const regSuccsessful = 'Зарегистрирован. Теперь можете войти'
-const notWords = 'У вас пока нет добавленых слов'
+const regSuccsessful = 'Зарегистрирован. Теперь можете войти';
+const notWords = 'У вас пока нет добавленых слов';
+const resetPass = 'Пароль отправлен на почту: ';
 
 module.exports = {
   resourceNotFound,
@@ -22,4 +23,5 @@ module.exports = {
   permissionText,
   regSuccsessful,
   notWords,
+  resetPass,
 };
