@@ -7,4 +7,5 @@ module.exports = {
   JWT_SECRET: process.env.JWT_SECRET || 'secret',
   EMAIL_LOGIN: process.env.EMAIL_LOGIN || process.env.EMAIL_LOGIN,
   EMAIL_SECRET: process.env.EMAIL_SECRET || process.env.EMAIL_SECRET,
+  EMAIL_HOST: process.env.EMAIL_HOST || process.env.EMAIL_HOST,
 };

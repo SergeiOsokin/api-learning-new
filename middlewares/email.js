@@ -1,10 +1,10 @@
 const nodemailer = require('nodemailer');
-const { EMAIL_LOGIN, EMAIL_SECRET } = require('../config');
+const { EMAIL_LOGIN, EMAIL_SECRET, EMAIL_HOST } = require('../config');
 
 const sendEmail = (to, subject, text) => {
   // Создаем транспорт для подключения к SMTP
   const transporter = nodemailer.createTransport({
-    host: 'sm29.hosting.reg.ru',
+    host: EMAIL_HOST,
     port: 465,
     secure: true, // использовать SSL
     auth: {
@@ -15,7 +15,7 @@ const sendEmail = (to, subject, text) => {
 
   // Настройки письма
   const mailOptions = {
-    from: 'support@learnew.ru',
+    from: EMAIL_LOGIN,
     to: `${to}`,
     subject: `${subject}`,
     text: `${text}`,
