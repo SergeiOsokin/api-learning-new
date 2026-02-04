@@ -68,7 +68,7 @@ const resetPassword = (req, res, next) => {
           client
             .query('UPDATE users SET password = ($1) WHERE email=($2)', [hash, email]) // обновляем пароль
             .then(() => {
-              sendEmail(email, 'Сброс пароля learnew', `Ваш новый пароль ${pass}`);
+              // sendEmail(email, 'Сброс пароля learnew', `Ваш новый пароль ${pass}`);
               res.send({ message: `${resetPass} ${email}` });
             })
             .catch((err) => {
