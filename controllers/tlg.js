@@ -28,7 +28,7 @@ const loginTlg = (req, res, next) => {
       const { id } = select.rows[0];
       const tokenDb = select.rows[0].token;
 
-      res.send({ message: 'Отлично, мы вас нашли!', email: select.rows[0].email });
+      res.send({ message: 'Все отлично! Чего желаете?', email: select.rows[0].email });
 
       // bcrypt.compare(form, tokenDb)
       //   .then((matched) => {
