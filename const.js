@@ -1,6 +1,7 @@
 const resourceNotFound = 'Ресурс не найден';
 const notFoundUserEmail = 'Email в базе не найден';
 const wrongPasswordOrLogin = 'Не правильный логин или пароль';
+const tokenError = 'Проблема с токеном. Попробуйте обновить в личном кабинете learnew.ru';
 const alreadyExist = 'Email уже используется.';
 const errorInArticleId = 'Ошибка в присланном идентификаторе статьи';
 const needHeader = 'Не авторизованы';
@@ -24,4 +25,5 @@ module.exports = {
   regSuccsessful,
   notWords,
   resetPass,
+  tokenError,
 };

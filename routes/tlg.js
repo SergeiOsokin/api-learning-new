@@ -3,12 +3,9 @@ const routerTlg = require('express').Router();
 const {
   loginTlg, getWords,
 } = require('../controllers/tlg');
+const { validationLogin, validationGetSmth } = require('../middlewares/validationTlg');
 
-// const {
-//   validationGetNotes, validationAddNote, validationPatchNotes, validationDeleteNotes,
-// } = require('../middlewares/validationNote');
-
-routerTlg.post('/login', loginTlg);
-routerTlg.post('/words', getWords);
+routerTlg.post('/login', validationLogin, loginTlg);
+routerTlg.post('/words', validationGetSmth, getWords);
 
 module.exports = routerTlg;
