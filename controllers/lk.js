@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { Client } = require('pg');
-const { notFoundUserEmail, wrongPasswordOrLogin } = require('../const');
+const { notFoundUserEmail, wrongPasswordOrLogin, newPass, wrongPassword } = require('../const');
 const { BadAuthData, NotFound } = require('../errors/errors');
 const { getPassword } = require('../middlewares/genPassword');
 // const { findUserByCredentials } = require('../models/user');
@@ -75,6 +75,51 @@ const resetPassword = (req, res, next) => {
               next(err);
             })
             .then(() => client.end());
+        })
+        .catch(next);
+    })
+    .catch((err) => {
+      client.end();
+      next(err);
+    });
+};
+
+const newPassword = (req, res, next) => {
+  const client = new Client(DATABASE_URL);
+  client.connect();// подключаемся к БД
+  const {
+    email, passwordOld, passwordNew,
+  } = req.body;
+
+  client.query('SELECT * from users where email=$1', [email.toLowerCase()])
+    .then((select) => {
+      if (!select.rows.length) {
+        client.end();
+        throw new NotFound(notFoundUserEmail);
+      }
+
+      const hash = select.rows[0].password;
+      // проверяем пароль
+      bcrypt.compare(passwordOld, hash)
+        .then((matched) => {
+          if (!matched) {
+            client.end();
+            throw new BadAuthData(wrongPassword);
+          }
+          // сохраняем новый пароль
+          bcrypt.hash(passwordNew, 10)
+            .then((newHash) => {
+              client
+                .query('UPDATE users SET password = ($2) WHERE email=($1)', [email.toLowerCase(), newHash]) // записываем информацию о пользователе
+                .then(() => {
+                  res.send({ message: newPass });
+                })
+                .catch((err) => {
+                  next(err);
+                })
+                .then(() => client.end());
+            })
+            .catch(next);
         })
         .catch(next);
     })
@@ -160,5 +205,5 @@ const getToken = (req, res, next) => {
 };
 
 module.exports = {
-  createUser, login, genToken, getToken,
+  createUser, login, genToken, getToken, newPassword,
 };
