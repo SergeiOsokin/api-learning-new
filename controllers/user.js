@@ -39,7 +39,7 @@ const login = (req, res, next) => {
             SameSite: 'None',
             Secure: true,
           })
-            .send({ user: id })
+            .send({ user: email })
             .end();
           client.end();
         })

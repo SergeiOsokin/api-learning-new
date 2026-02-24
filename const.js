@@ -13,6 +13,7 @@ const notWords = 'У вас пока нет добавленых слов';
 const resetPass = 'Пароль отправлен на почту: ';
 const newPass = 'Пароль установлен. Необходимо войти с новым паролем ';
 const wrongPassword = 'Старый пароль введен неверно';
+const problemPassword = 'Проблема при обновлении. Пароль не изменен'
 
 module.exports = {
   resourceNotFound,
@@ -30,4 +31,5 @@ module.exports = {
   tokenError,
   newPass,
   wrongPassword,
+  problemPassword,
 };

@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { Client } = require('pg');
-const { notFoundUserEmail, wrongPasswordOrLogin, newPass, wrongPassword } = require('../const');
+const { notFoundUserEmail, wrongPasswordOrLogin, newPass, wrongPassword, problemPassword } = require('../const');
 const { BadAuthData, NotFound } = require('../errors/errors');
 const { getPassword } = require('../middlewares/genPassword');
 // const { findUserByCredentials } = require('../models/user');
@@ -85,13 +85,14 @@ const resetPassword = (req, res, next) => {
 };
 
 const newPassword = (req, res, next) => {
+  const userId = req.user._id;
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
   const {
     email, passwordOld, passwordNew,
   } = req.body;
 
-  client.query('SELECT * from users where email=$1', [email.toLowerCase()])
+  client.query('SELECT * from users where id=$1', [userId])
     .then((select) => {
       if (!select.rows.length) {
         client.end();
@@ -110,9 +111,13 @@ const newPassword = (req, res, next) => {
           bcrypt.hash(passwordNew, 10)
             .then((newHash) => {
               client
-                .query('UPDATE users SET password = ($2) WHERE email=($1)', [email.toLowerCase(), newHash]) // записываем информацию о пользователе
-                .then(() => {
-                  res.send({ message: newPass });
+                .query('UPDATE users SET password = ($2) WHERE id=($1)', [userId, newHash]) // записываем информацию о пользователе
+                .then((result) => {
+                  if (result.rowCount) {
+                    res.send({ message: newPass, status: true });
+                  } else {
+                    res.send({ error: problemPassword, status: false });
+                  }
                 })
                 .catch((err) => {
                   next(err);
@@ -163,16 +168,15 @@ const createUser = (req, res, next) => {
 };
 
 const genToken = (req, res, next) => {
+  const userId = req.user._id;
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
 
-  const { email } = req.body;
-
   client
-    .query('update users set token = password where users.email = ($1)', [email])
+    .query('update users set token = password where users.id = ($1)', [userId])
     .then(() => {
       client
-        .query('select token from users where email = ($1)', [email])
+        .query('select token from users where id = ($1)', [userId])
         .then((result) => {
           res.send(result.rows[0]);
           client.end();
