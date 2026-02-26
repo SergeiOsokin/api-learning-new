@@ -11,6 +11,9 @@ const permissionText = 'Недостаточно прав';
 const regSuccsessful = 'Зарегистрирован. Теперь можете войти';
 const notWords = 'У вас пока нет добавленых слов';
 const resetPass = 'Пароль отправлен на почту: ';
+const newPass = 'Пароль установлен. Необходимо войти с новым паролем ';
+const wrongPassword = 'Старый пароль введен неверно';
+const problemPassword = 'Проблема при обновлении. Пароль не изменен'
 
 module.exports = {
   resourceNotFound,
@@ -26,4 +29,7 @@ module.exports = {
   notWords,
   resetPass,
   tokenError,
+  newPass,
+  wrongPassword,
+  problemPassword,
 };

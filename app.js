@@ -20,6 +20,7 @@ const { PORT, NODE_ENV } = require('./config');
 const routerTaks = require('./routes/task');
 const routerHomework = require('./routes/homework');
 const routerTlg = require('./routes/tlg');
+const routerLk = require('./routes/lk');
 
 const whitelist = [
   'http://localhost:8080',
@@ -63,7 +64,9 @@ app.post('/api/signin', validationLogin, login);
 app.post('/api/reset', resetPassword);
 // app.get('/api/users', getUser);
 
-app.use('/api/tlg', routerTlg);
+app.use('/api/tlg', auth, routerTlg);
+
+app.use('/api/lk', auth, routerLk);
 
 app.use('/api/words', auth, routerWords);
 

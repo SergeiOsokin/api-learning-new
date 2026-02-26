@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { Client } = require('pg');
-const { notFoundUserEmail, wrongPasswordOrLogin } = require('../const');
+const { notFoundUserEmail, wrongPasswordOrLogin, newPass, wrongPassword, problemPassword } = require('../const');
 const { BadAuthData, NotFound } = require('../errors/errors');
 const { getPassword } = require('../middlewares/genPassword');
 // const { findUserByCredentials } = require('../models/user');
@@ -39,7 +39,7 @@ const login = (req, res, next) => {
             SameSite: 'None',
             Secure: true,
           })
-            .send({ user: email })
+            .send({ user: id })
             .end();
           client.end();
         })
@@ -84,6 +84,56 @@ const resetPassword = (req, res, next) => {
     });
 };
 
+const newPassword = (req, res, next) => {
+  const userId = req.user._id;
+  const client = new Client(DATABASE_URL);
+  client.connect();// подключаемся к БД
+  const {
+    email, passwordOld, passwordNew,
+  } = req.body;
+
+  client.query('SELECT * from users where id=$1', [userId])
+    .then((select) => {
+      if (!select.rows.length) {
+        client.end();
+        throw new NotFound(notFoundUserEmail);
+      }
+
+      const hash = select.rows[0].password;
+      // проверяем пароль
+      bcrypt.compare(passwordOld, hash)
+        .then((matched) => {
+          if (!matched) {
+            client.end();
+            throw new BadAuthData(wrongPassword);
+          }
+          // сохраняем новый пароль
+          bcrypt.hash(passwordNew, 10)
+            .then((newHash) => {
+              client
+                .query('UPDATE users SET password = ($2) WHERE id=($1)', [userId, newHash]) // записываем информацию о пользователе
+                .then((result) => {
+                  if (result.rowCount) {
+                    res.send({ message: newPass, status: true });
+                  } else {
+                    res.send({ error: problemPassword, status: false });
+                  }
+                })
+                .catch((err) => {
+                  next(err);
+                })
+                .then(() => client.end());
+            })
+            .catch(next);
+        })
+        .catch(next);
+    })
+    .catch((err) => {
+      client.end();
+      next(err);
+    });
+};
+
 const createUser = (req, res, next) => {
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
@@ -117,14 +167,40 @@ const createUser = (req, res, next) => {
     });
 };
 
-const getUser = (req, res, next) => {
+const genToken = (req, res, next) => {
+  const userId = req.user._id;
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
 
-  client.query('SELECT * from users')
-    .then((select) => {
-      res.send({ select });
-      return client.end();
+  client
+    .query('update users set token = password where users.id = ($1)', [userId])
+    .then(() => {
+      client
+        .query('select token from users where id = ($1)', [userId])
+        .then((result) => {
+          res.send(result.rows[0]);
+          client.end();
+        });
+    })
+    .catch((err) => {
+      client.end();
+      next(err);
+    });
+};
+
+const getToken = (req, res, next) => {
+  const client = new Client(DATABASE_URL);
+  client.connect();// подключаемся к БД
+
+  const { email } = req.body;
+
+  console.log(req.body);
+
+  client
+    .query('select token from users where email = ($1)', ['tgb@tgb.ru'])
+    .then((result) => {
+      res.send(result.rows[0]);
+      client.end();
     })
     .catch((err) => {
       client.end();
@@ -133,5 +209,5 @@ const getUser = (req, res, next) => {
 };
 
 module.exports = {
-  createUser, login, getUser, resetPassword,
+  createUser, login, genToken, getToken, newPassword,
 };
