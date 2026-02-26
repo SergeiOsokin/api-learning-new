@@ -64,7 +64,7 @@ app.post('/api/signin', validationLogin, login);
 app.post('/api/reset', resetPassword);
 // app.get('/api/users', getUser);
 
-app.use('/api/tlg', auth, routerTlg);
+app.use('/api/tlg', routerTlg);
 
 app.use('/api/lk', auth, routerLk);
 
