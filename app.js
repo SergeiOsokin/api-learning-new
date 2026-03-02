@@ -1,12 +1,17 @@
 const express = require('express');
+
+const app = express();
+const path = require('path');
 require('dotenv').config();
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
 const helmet = require('helmet');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const { limiter } = require('./rateLimit-config');
+const serverWS = require('http').createServer(app);
+const io = require('socket.io')(serverWS);
 
+const { limiter } = require('./rateLimit-config');
 const { routerWords, routerNotes, routerCategory } = require('./routes/index');
 const { createUser, login, resetPassword } = require('./controllers/user');
 const { auth } = require('./middlewares/auth');
@@ -16,7 +21,7 @@ const { validationCreateUser, validationLogin } = require('./middlewares/validat
 const { errorMiddleware } = require('./middlewares/errorMiddlewares');
 const { NotFound } = require('./errors/errors');
 const { resourceNotFound } = require('./const');
-const { PORT, NODE_ENV } = require('./config');
+const { PORT, NODE_ENV, PORT_WS } = require('./config');
 const routerTaks = require('./routes/task');
 const routerHomework = require('./routes/homework');
 const routerTlg = require('./routes/tlg');
@@ -48,7 +53,6 @@ const corsOptions = {
   // exposedHeaders: ['set-cookie'],
 };
 
-const app = express();
 app.use(cookieParser());
 app.use(cors(corsOptions));
 
@@ -79,13 +83,21 @@ app.use('/api/homework', auth, routerHomework);
 
 app.delete('/api/deletecookie', auth, deleteCookie);
 
+io.on('connection', (socket) => {
+  console.log('Socket connection');
+});
 
 app.use(errorLogger);
 app.use('*', (req, res, next) => next(new NotFound(resourceNotFound)));
 app.use(errors());
 app.use(errorMiddleware);
 
+serverWS.listen(PORT_WS, () => {
+  // eslint-disable-next-line no-console
+  console.log(`Begin ws listening ${PORT_WS} ${NODE_ENV}`);
+});
+
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
-  console.log(`Begin listening ${PORT} ${NODE_ENV}`);
+  console.log(`Begin app listening ${PORT} ${NODE_ENV}`);
 });
