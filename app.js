@@ -26,6 +26,7 @@ const routerTaks = require('./routes/task');
 const routerHomework = require('./routes/homework');
 const routerTlg = require('./routes/tlg');
 const routerLk = require('./routes/lk');
+const ACTIONS = require('./middlewares/actions');
 
 const whitelist = [
   'http://localhost:8080',
@@ -67,25 +68,92 @@ app.post('/api/signup', validationCreateUser, createUser);
 app.post('/api/signin', validationLogin, login);
 app.post('/api/reset', resetPassword);
 // app.get('/api/users', getUser);
-
 app.use('/api/tlg', routerTlg);
-
 app.use('/api/lk', auth, routerLk);
-
 app.use('/api/words', auth, routerWords);
-
 app.use('/api/notes', auth, routerNotes);
-
 app.use('/api/category', auth, routerCategory);
-
 app.use('/api/task', auth, routerTaks);
 app.use('/api/homework', auth, routerHomework);
 
 app.delete('/api/deletecookie', auth, deleteCookie);
+// видеозвонки
+// io.on('connection', (socket) => {
+//   console.log('Socket connection');
+// });
 
+const getClientsRooms = () => {
+  const { rooms } = io.sockets.adapter;
+
+  return Array.from(rooms.keys());
+};
+
+const shareRoomsInfo = () => {
+  io.emit(ACTIONS.SHARE_ROOMS, {
+    rooms: getClientsRooms(),
+  });
+};
+
+// логика подключения к комнатам
 io.on('connection', (socket) => {
   console.log('Socket connection');
+  shareRoomsInfo();
+
+  socket.on(ACTIONS.JOIN, (config) => {
+    const { room: roomID } = config;
+    const { rooms: joinedRooms } = socket;
+
+    if (Array.from(joinedRooms).includes(roomID)) {
+      return console.warn(`Уже подключены ${roomID}`);
+    }
+
+    const clients = Array.from(io.sockets.adapter.rooms.get(roomID) || []);
+
+    clients.forEach((clientID) => {
+      io.to(clientID).emit(ACTIONS.ADD_PEER, {
+        peerID: socket.id,
+        createOffer: false,
+      });
+
+      socket.emit(ACTIONS.ADD_PEER, {
+        peerID: clientID,
+        createOffer: true,
+      });
+    });
+
+    socket.join(roomID);
+    shareRoomsInfo();
+  });
+
+  const leaveRoom = () => {
+    const { rooms } = socket;
+
+    Array.from(rooms).forEach((roomID) => {
+      const clients = Array.from(io.sockets.adapter.rooms.get(roomID) || []);
+
+      clients.forEach((clientID) => {
+        io.to(clientID).emit(ACTIONS.REMOVE_PEER, {
+          peerID: socket.id,
+        });
+
+        socket.emit(ACTIONS.REMOVE_PEER, {
+          peerID: clientID,
+        });
+      });
+
+      socket.leave(roomID);
+
+      shareRoomsInfo();
+    });
+
+    shareRoomsInfo();
+  };
+
+  socket.on(ACTIONS.LEAVE, leaveRoom);
+  socket.on('disconnecting', leaveRoom);
 });
+
+
 
 app.use(errorLogger);
 app.use('*', (req, res, next) => next(new NotFound(resourceNotFound)));
