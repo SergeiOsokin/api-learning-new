@@ -10,6 +10,7 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const serverWS = require('http').createServer(app);
 const io = require('socket.io')(serverWS);
+const { validate, version } = require('uuid');
 
 const { limiter } = require('./rateLimit-config');
 const { routerWords, routerNotes, routerCategory } = require('./routes/index');
@@ -85,7 +86,7 @@ app.delete('/api/deletecookie', auth, deleteCookie);
 const getClientsRooms = () => {
   const { rooms } = io.sockets.adapter;
 
-  return Array.from(rooms.keys());
+  return Array.from(rooms.keys()).filter((roomID) => validate(roomID) && version(roomID) === 4);
 };
 
 const shareRoomsInfo = () => {
@@ -152,7 +153,6 @@ io.on('connection', (socket) => {
   socket.on(ACTIONS.LEAVE, leaveRoom);
   socket.on('disconnecting', leaveRoom);
 });
-
 
 
 app.use(errorLogger);
