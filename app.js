@@ -97,7 +97,6 @@ const shareRoomsInfo = () => {
 
 // логика подключения к комнатам
 io.on('connection', (socket) => {
-  console.log('Socket connection');
   shareRoomsInfo();
 
   socket.on(ACTIONS.JOIN, (config) => {
@@ -152,6 +151,20 @@ io.on('connection', (socket) => {
 
   socket.on(ACTIONS.LEAVE, leaveRoom);
   socket.on('disconnecting', leaveRoom);
+
+  socket.on(ACTIONS.RELAY_SDP, ({ peerID, sessionDescription }) => {
+    io.to(peerID).emit(ACTIONS.SESSION_DESCRIPTION, {
+      peerID: socket.id,
+      sessionDescription,
+    });
+  });
+
+  socket.on(ACTIONS.RELAY_ICE, ({ peerID, iceCandidate }) => {
+    io.to(peerID).emit(ACTIONS.ICE_CANDIDATE, {
+      peerID: socket.id,
+      iceCandidate,
+    });
+  });
 });
 
 
