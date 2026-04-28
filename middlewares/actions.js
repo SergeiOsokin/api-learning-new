@@ -1,4 +1,4 @@
-const ACTIONS = {
+const STEP = {
   JOIN: 'join',
   LEAVE: 'leave',
   SHARE_ROOMS: 'share-rooms',
@@ -10,4 +10,4 @@ const ACTIONS = {
   SESSION_DESCRIPTION: 'session-description',
 };
 
-module.exports = ACTIONS;
+module.exports = STEP;
