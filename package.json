@@ -1,6 +1,6 @@
 {
   "name": "news-search-api",
-  "version": "1.2.0",
+  "version": "2.3.0",
   "description": "Backend for learnew project",
   "main": "index.js",
   "type": "commonjs",

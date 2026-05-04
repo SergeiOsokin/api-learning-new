@@ -173,7 +173,6 @@ io.on('connection', (socket) => {
   });
 });
 
-
 app.use(errorLogger);
 app.use('*', (req, res, next) => next(new NotFound(resourceNotFound)));
 app.use(errors());
