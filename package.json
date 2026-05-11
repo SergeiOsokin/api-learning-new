@@ -1,8 +1,9 @@
 {
   "name": "news-search-api",
-  "version": "1.2.0",
+  "version": "2.3.0",
   "description": "Backend for learnew project",
   "main": "index.js",
+  "type": "commonjs",
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon --max_old_space_size=8000 app.js"
@@ -28,11 +29,15 @@
     "express": "^4.17.1",
     "express-rate-limit": "^5.1.3",
     "express-winston": "^4.0.3",
+    "freeice": "^2.2.2",
     "helmet": "^3.22.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.15",
     "nodemailer": "^7.0.12",
     "pg": "^8.6.0",
+    "socket.io": "^4.8.3",
+    "socket.io-client": "^4.8.3",
+    "uuid": "^11.1.0",
     "validator": "^13.0.0",
     "winston": "^3.2.1"
   },
