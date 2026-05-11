@@ -95,93 +95,93 @@ function shareRoomsInfo() {
   });
 }
 
-io.on('connection', (socket) => {
-  shareRoomsInfo();
+// io.on('connection', (socket) => {
+//   shareRoomsInfo();
 
-  function leaveRoom() {
-    const { rooms } = socket;
+//   function leaveRoom() {
+//     const { rooms } = socket;
 
-    Array.from(rooms)
-      .filter((roomID) => validate(roomID) && version(roomID) === 4)
-      .forEach((roomID) => {
-        const clients = Array.from(io.sockets.adapter.rooms.get(roomID) || []);
+//     Array.from(rooms)
+//       .filter((roomID) => validate(roomID) && version(roomID) === 4)
+//       .forEach((roomID) => {
+//         const clients = Array.from(io.sockets.adapter.rooms.get(roomID) || []);
 
-        clients
-          .forEach((clientID) => {
-            io.to(clientID).emit(STEP.REMOVE_PEER, {
-              peerID: socket.id,
-            });
+//         clients
+//           .forEach((clientID) => {
+//             io.to(clientID).emit(STEP.REMOVE_PEER, {
+//               peerID: socket.id,
+//             });
 
-            socket.emit(STEP.REMOVE_PEER, {
-              peerID: clientID,
-            });
-          });
+//             socket.emit(STEP.REMOVE_PEER, {
+//               peerID: clientID,
+//             });
+//           });
 
-        socket.leave(roomID);
-      });
+//         socket.leave(roomID);
+//       });
 
-    shareRoomsInfo();
-  }
+//     shareRoomsInfo();
+//   }
 
-  socket.on(STEP.JOIN, (config) => {
-    const { room: roomID } = config;
-    const { rooms: joinedRooms } = socket;
+//   socket.on(STEP.JOIN, (config) => {
+//     const { room: roomID } = config;
+//     const { rooms: joinedRooms } = socket;
 
-    if (Array.from(joinedRooms).includes(roomID)) {
-      return console.warn(`Already joined to ${roomID}`);
-    }
+//     if (Array.from(joinedRooms).includes(roomID)) {
+//       return console.warn(`Already joined to ${roomID}`);
+//     }
 
-    if (io.engine.clientsCount === 2) {
-      socket.on(STEP.LEAVE, leaveRoom);
-      socket.on('disconnecting', leaveRoom);
-      return console.warn(`Max members in room: ${roomID}`);
-    }
+//     if (io.engine.clientsCount === 2) {
+//       socket.on(STEP.LEAVE, leaveRoom);
+//       socket.on('disconnecting', leaveRoom);
+//       return console.warn(`Max members in room: ${roomID}`);
+//     }
 
-    const clients = Array.from(io.sockets.adapter.rooms.get(roomID) || []);
+//     const clients = Array.from(io.sockets.adapter.rooms.get(roomID) || []);
 
-    clients.forEach((clientID) => {
-      io.to(clientID).emit(STEP.ADD_PEER, {
-        peerID: socket.id,
-        createOffer: false,
-      });
+//     clients.forEach((clientID) => {
+//       io.to(clientID).emit(STEP.ADD_PEER, {
+//         peerID: socket.id,
+//         createOffer: false,
+//       });
 
-      socket.emit(STEP.ADD_PEER, {
-        peerID: clientID,
-        createOffer: true,
-      });
-    });
+//       socket.emit(STEP.ADD_PEER, {
+//         peerID: clientID,
+//         createOffer: true,
+//       });
+//     });
 
-    socket.join(roomID);
-    shareRoomsInfo();
-  });
+//     socket.join(roomID);
+//     shareRoomsInfo();
+//   });
 
-  socket.on(STEP.LEAVE, leaveRoom);
-  socket.on('disconnecting', leaveRoom);
+//   socket.on(STEP.LEAVE, leaveRoom);
+//   socket.on('disconnecting', leaveRoom);
 
-  socket.on(STEP.RELAY_SDP, ({ peerID, sessionDescription }) => {
-    io.to(peerID).emit(STEP.SESSION_DESCRIPTION, {
-      peerID: socket.id,
-      sessionDescription,
-    });
-  });
+//   socket.on(STEP.RELAY_SDP, ({ peerID, sessionDescription }) => {
+//     io.to(peerID).emit(STEP.SESSION_DESCRIPTION, {
+//       peerID: socket.id,
+//       sessionDescription,
+//     });
+//   });
 
-  socket.on(STEP.RELAY_ICE, ({ peerID, iceCandidate }) => {
-    io.to(peerID).emit(STEP.ICE_CANDIDATE, {
-      peerID: socket.id,
-      iceCandidate,
-    });
-  });
-});
+//   socket.on(STEP.RELAY_ICE, ({ peerID, iceCandidate }) => {
+//     io.to(peerID).emit(STEP.ICE_CANDIDATE, {
+//       peerID: socket.id,
+//       iceCandidate,
+//     });
+//   });
+// });
 
 app.use(errorLogger);
 app.use('*', (req, res, next) => next(new NotFound(resourceNotFound)));
 app.use(errors());
 app.use(errorMiddleware);
 
-serverWS.listen(PORT_WS, () => {
-  // eslint-disable-next-line no-console
-  console.log(`Begin ws listening ${PORT_WS} ${NODE_ENV}`);
-});
+// serverWS.listen(PORT_WS, () => {
+//   // eslint-disable-next-line no-console
+//   console.log(`Begin ws listening ${PORT_WS} ${NODE_ENV}`);
+// });
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
