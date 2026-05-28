@@ -66,6 +66,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(helmet());
 app.use(requestLogger);
 
+// console.log(app.use('*', (next) => {
+//   next;
+// }))
+
+app.get('/api/checkauth', auth, (req, res, next) => {
+  res.status(200).send({});
+});
+
 app.post('/api/signup', validationCreateUser, createUser);
 app.post('/api/signin', validationLogin, login);
 app.post('/api/reset', resetPassword);
