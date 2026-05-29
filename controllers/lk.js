@@ -194,10 +194,8 @@ const getToken = (req, res, next) => {
 
   const { email } = req.body;
 
-  console.log(req.body);
-
   client
-    .query('select token from users where email = ($1)', ['tgb@tgb.ru'])
+    .query('select token from users where email = ($1)', [email])
     .then((result) => {
       res.send(result.rows[0]);
       client.end();
