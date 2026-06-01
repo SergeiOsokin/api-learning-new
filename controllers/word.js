@@ -7,12 +7,14 @@ const { notWords } = require('../const');
 const getWords = (req, res, next) => {
   const sqlReq = `
   SELECT words.id, words.foreign_word, words.russian_word, words.category_word_id, category_word.category
-  FROM words JOIN category_word ON category_word.id = words.category_word_id AND words.user_id = ($1)`;
+  FROM words JOIN category_word ON category_word.id = words.category_word_id AND words.user_id = ($1)
+  ORDER BY words.id desc`;
 
   const sqlReq2 = `
   SELECT words.id, words.foreign_word, words.russian_word, words.category_word_id, category_word.category
   FROM words JOIN category_word ON category_word.id = words.category_word_id AND words.user_id = ($1)
-  WHERE category_word.category = ($2);`;
+  WHERE category_word.category = ($2)
+  ORDER BY words.id desc;`;
 
   const userId = req.user._id;
   const { category } = req.query;
@@ -25,7 +27,7 @@ const getWords = (req, res, next) => {
       // eslint-disable-next-line consistent-return
       .then((result) => {
         if (result.rowCount === 0) return res.send({ message: notWords, data: [] });
-        res.send({ data: result.rows, status: 200 });
+        res.set({ 'Cache-Control': 'max-age=600, immutable, private' }).send({ data: result.rows });
         client.end();
       })
       .catch((err) => {
@@ -37,7 +39,7 @@ const getWords = (req, res, next) => {
       // eslint-disable-next-line consistent-return
       .then((result) => {
         if (result.rowCount === 0) return res.send({ message: notWords, data: [] });
-        res.send({ data: result.rows, status: 200 });
+        res.set({ 'Cache-Control': 'max-age=600, immutable, private' }).send({ data: result.rows });
         client.end();
       })
       .catch((err) => {

@@ -4,13 +4,10 @@ const { Client } = require('pg');
 const { notFoundUserEmail, wrongPasswordOrLogin, newPass, wrongPassword, problemPassword } = require('../const');
 const { BadAuthData, NotFound } = require('../errors/errors');
 const { getPassword } = require('../middlewares/genPassword');
-// const { findUserByCredentials } = require('../models/user');
-// const { NotFound } = require('../errors/errors');
 const { alreadyExist, regSuccsessful, resetPass } = require('../const');
 const { DATABASE_URL } = require('../config');
 
 const { JWT_SECRET } = require('../config');
-const { sendEmail } = require('../middlewares/email');
 
 const login = (req, res, next) => {
   const client = new Client(DATABASE_URL);
@@ -42,39 +39,6 @@ const login = (req, res, next) => {
             .send({ user: id })
             .end();
           client.end();
-        })
-        .catch(next);
-    })
-    .catch((err) => {
-      client.end();
-      next(err);
-    });
-};
-
-const resetPassword = (req, res, next) => {
-  const client = new Client(DATABASE_URL);
-  client.connect();// подключаемся к БД
-  const { email } = req.body;
-  client.query('SELECT email from users where email=$1', [email.toLowerCase()])
-    .then((select) => {
-      if (!select.rows.length) {
-        client.end();
-        throw new NotFound(notFoundUserEmail);
-      }
-      const pass = getPassword(10);
-      console.log(pass);
-      bcrypt.hash(pass, 10)
-        .then((hash) => {
-          client
-            .query('UPDATE users SET password = ($1) WHERE email=($2)', [hash, email]) // обновляем пароль
-            .then(() => {
-              // sendEmail(email, 'Сброс пароля learnew', `Ваш новый пароль ${pass}`);
-              res.send({ message: `${resetPass} ${email}` });
-            })
-            .catch((err) => {
-              next(err);
-            })
-            .then(() => client.end());
         })
         .catch(next);
     })
@@ -188,16 +152,23 @@ const genToken = (req, res, next) => {
     });
 };
 
-const getToken = (req, res, next) => {
+const genSentence = (req, res, next) => {
+  const userId = req.user._id;
+  const { theme, category } = req.body;
+
+
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
 
-  const { email } = req.body;
-
   client
-    .query('select token from users where email = ($1)', [email])
+    .query(
+      `SELECT category_word.category, words.foreign_word
+        FROM words
+        JOIN category_word ON category_word.id = words.category_word_id
+        WHERE words.user_id = ($1) AND category_word.id = ($2)`, [userId, category],
+    )
     .then((result) => {
-      res.send(result.rows[0]);
+      res.send(result.rows);
       client.end();
     })
     .catch((err) => {
@@ -207,5 +178,5 @@ const getToken = (req, res, next) => {
 };
 
 module.exports = {
-  createUser, login, genToken, getToken, newPassword,
+  createUser, login, genToken, genSentence, newPassword,
 };

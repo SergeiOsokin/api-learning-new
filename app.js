@@ -28,6 +28,7 @@ const routerHomework = require('./routes/homework');
 const routerTlg = require('./routes/tlg');
 const routerLk = require('./routes/lk');
 const STEP = require('./middlewares/actions');
+const routerAi = require('./routes/ai');
 
 const whitelist = [
   'http://localhost:8080',
@@ -65,6 +66,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(helmet());
 app.use(requestLogger);
 
+// console.log(app.use('*', (next) => {
+//   next;
+// }))
+
+app.get('/api/checkauth', auth, (req, res, next) => {
+  res.status(200).send({});
+});
+
 app.post('/api/signup', validationCreateUser, createUser);
 app.post('/api/signin', validationLogin, login);
 app.post('/api/reset', resetPassword);
@@ -76,6 +85,8 @@ app.use('/api/notes', auth, routerNotes);
 app.use('/api/category', auth, routerCategory);
 app.use('/api/task', auth, routerTaks);
 app.use('/api/homework', auth, routerHomework);
+
+app.use('/api/ai', auth, routerAi);
 
 app.delete('/api/deletecookie', auth, deleteCookie);
 // видеозвонки
