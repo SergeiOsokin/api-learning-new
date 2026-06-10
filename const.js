@@ -13,7 +13,9 @@ const notWords = 'У вас пока нет добавленых слов';
 const resetPass = 'Пароль отправлен на почту: ';
 const newPass = 'Пароль установлен. Необходимо войти с новым паролем ';
 const wrongPassword = 'Старый пароль введен неверно';
-const problemPassword = 'Проблема при обновлении. Пароль не изменен'
+const problemPassword = 'Проблема при обновлении. Пароль не изменен';
+const editTypeUser = 'Тип пользователя изменен';
+const someError = 'Что-то пошло не так';
 
 module.exports = {
   resourceNotFound,
@@ -32,4 +34,6 @@ module.exports = {
   newPass,
   wrongPassword,
   problemPassword,
+  editTypeUser,
+  someError,
 };
