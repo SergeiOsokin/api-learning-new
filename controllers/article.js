@@ -35,7 +35,7 @@ const getArticlesAuthor = (req, res, next) => {
         ORDER BY date_create`, [userId],
     )
     .then((result) => {
-      res.send(result.rows);
+      res.send({ data: result.rows, status: 200 });
       client.end();
     })
     .catch((err) => {
