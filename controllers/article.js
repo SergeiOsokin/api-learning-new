@@ -93,22 +93,55 @@ const patchArticle = (req, res, next) => {
     });
 };
 
+const postArticle = (req, res, next) => {
+  const userId = req.user._id;
+  const { articleId } = req.params;
+  const { posted } = req.query;
+  const client = new Client(DATABASE_URL);
+  client.connect();// подключаемся к БД
+  client.query('UPDATE article SET posted = ($1) WHERE id= ($2) and user_id = ($3)',
+    [posted, articleId, userId])
+    .then(() => {
+      client.query('SELECT posted FROM article  WHERE id= ($1) and user_id = ($2)', [articleId, userId])
+        .then((result) => {
+          res.send({ message: 'Признак публикации изменен', data: result.rows[0].posted });
+          client.end();
+        })
+        .catch((err) => {
+          client.end();
+          next(err);
+        });
+    })
+    .catch((err) => {
+      client.end();
+      next(err);
+    });
+};
+
 const deleteArticle = (req, res, next) => {
+  const userId = req.user._id;
+  const { articleId } = req.params;
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
   client
     .query(
-      `DELETE from task_student WHERE task_student.task_id = ($1)
-    `, [req.params.taskId],
-    );
-  client
-    .query(
-      `DELETE from task WHERE task.id = ($1)
-    `, [req.params.taskId],
+      `SELECT posted from article WHERE user_id = ($1) and id = ($2)
+    `, [userId, articleId],
     )
-    .then(() => {
-      res.send({ message: 'Задание удалено' });
-      client.end();
+    .then((result) => {
+      if (result.rows[0].posted) {
+        next({ message: 'С начала снимите с публикации' });
+        return client.end();
+      }
+      client
+        .query(
+          'DELETE from article WHERE user_id = ($1) and id = ($2)',
+          [userId, articleId],
+        )
+        .then(() => {
+          res.send({ message: 'Статья удалена' });
+          client.end();
+        });
     })
     .catch((err) => {
       client.end();
@@ -122,4 +155,5 @@ module.exports = {
   getArticle,
   patchArticle,
   deleteArticle,
+  postArticle,
 };
