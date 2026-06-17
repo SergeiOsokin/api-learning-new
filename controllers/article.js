@@ -44,7 +44,7 @@ const getArticlesAuthor = (req, res, next) => {
     });
 };
 
-const getArticle = (req, res, next) => {
+const getArticleAuthor = (req, res, next) => {
   const userId = req.user._id;
   const { articleId } = req.params;
   const client = new Client(DATABASE_URL);
@@ -149,11 +149,34 @@ const deleteArticle = (req, res, next) => {
     });
 };
 
+// Блок статьей в ленте
+const getArticlesAll = (req, res, next) => {
+  const client = new Client(DATABASE_URL);
+  client.connect();// подключаемся к БД
+
+  client
+    .query(
+      `SELECT id, date_create, image, theme, category, text_art
+        FROM article
+        WHERE posted = 'true'
+        ORDER BY date_create`,
+    )
+    .then((result) => {
+      res.send({ data: result.rows, status: 200 });
+      client.end();
+    })
+    .catch((err) => {
+      client.end();
+      next(err);
+    });
+};
+
 module.exports = {
   createArticle,
   getArticlesAuthor,
-  getArticle,
+  getArticleAuthor,
   patchArticle,
   deleteArticle,
   postArticle,
+  getArticlesAll,
 };
