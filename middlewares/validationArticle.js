@@ -4,7 +4,6 @@ const validationCreateArticle = celebrate({
   body: Joi.object().keys({
     theme: Joi.string().required().max(50),
     category: Joi.string().required().max(50),
-    image: Joi.string().max(50),
     text_art: Joi.string().required().max(2000),
   }).unknown(true),
   headers: Joi.object().keys({
@@ -26,7 +25,6 @@ const validationPatchArticle = celebrate({
   body: Joi.object().keys({
     theme: Joi.string().required().max(50),
     category: Joi.string().required().max(50),
-    image: Joi.string().max(50),
     text_art: Joi.string().required().max(2000),
   }).unknown(true),
   headers: Joi.object().keys({
@@ -97,6 +95,20 @@ const validationDeleteArticle = celebrate({
   },
 });
 
+const validationLikeArticle = celebrate({
+  params: Joi.object().keys({
+    articleId: Joi.number().required(),
+  }).unknown(true),
+  headers: Joi.object().keys({
+    cookie: Joi.string().required(),
+  }).unknown(true),
+}, {
+  abortEarly: false,
+  messages: {
+    'string.required': '{#label} Обязательный параметр',
+  },
+});
+
 module.exports = {
   validationCreateArticle,
   validationGetArticles,
@@ -104,4 +116,5 @@ module.exports = {
   validationPatchArticle,
   validationDeleteArticle,
   validationPostArticle,
+  validationLikeArticle,
 };

@@ -151,19 +151,118 @@ const deleteArticle = (req, res, next) => {
 
 // Блок статьей в ленте
 const getArticlesAll = (req, res, next) => {
+  const anyArticles = `SELECT article.id, article.date_create, article.image, article.theme, article.category, article.text_art, user_article_feed.liked, user_article_feed.watched
+        FROM article
+        LEFT JOIN user_article_feed ON user_article_feed.article_id = article.id
+        WHERE article.posted = 'true'
+        ORDER BY article.date_create desc`;
+
+  const likedArticles = `SELECT article.id, article.date_create, article.image, article.theme, article.category, article.text_art, user_article_feed.liked, user_article_feed.watched
+        FROM article
+        LEFT JOIN user_article_feed ON user_article_feed.article_id = article.id
+        WHERE article.posted = 'true' and user_article_feed.liked = true
+        ORDER BY article.date_create desc`;
+
+  const { filter } = req.query;
+
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
 
   client
     .query(
-      `SELECT id, date_create, image, theme, category, text_art
-        FROM article
-        WHERE posted = 'true'
-        ORDER BY date_create`,
+      filter === 'liked' ? likedArticles : anyArticles,
     )
     .then((result) => {
       res.send({ data: result.rows, status: 200 });
       client.end();
+    })
+    .catch((err) => {
+      client.end();
+      next(err);
+    });
+};
+
+const likeArticle = (req, res, next) => {
+  const userId = req.user._id;
+  const { articleId } = req.params;
+
+  const client = new Client(DATABASE_URL);
+  client.connect();// подключаемся к БД
+
+  client
+    .query(
+      'select * from user_article_feed WHERE article_id = ($1) and user_id = ($2)', [articleId, userId],
+    )
+    .then((result) => {
+      // если пустое, значит пользователь ничего со статьей еще не делал
+      if (!result.rows.length) {
+        client.query('INSERT INTO user_article_feed (user_id, article_id, liked) VALUES ($1, $2, $3)', [userId, articleId, true])
+          .then((resIns) => {
+            res.send({ message: 'Добавлена запись', data: resIns.rows });
+            return client.end();
+          })
+          .catch((err) => {
+            client.end();
+            next(err);
+          });
+      } else {
+        // если что-то возвращается, значит пользователь что-то уже делал со статьей
+        client.query('UPDATE user_article_feed SET liked = (CASE WHEN liked = true THEN false ELSE true END) WHERE article_id = ($1) and user_id = ($2)', [articleId, userId])
+          .then((resUpd) => {
+            res.send({ message: 'Обновлена запись', data: resUpd.rows });
+            return client.end();
+          })
+          .catch((err) => {
+            client.end();
+            next(err);
+          });
+      }
+
+      // res.send({ message: 'Не добавлена запись, надо апдейтить', data: result.rows });
+    })
+    .catch((err) => {
+      client.end();
+      next(err);
+    });
+};
+
+const watchArticle = (req, res, next) => {
+  const userId = req.user._id;
+  const { articleId } = req.params;
+
+  const client = new Client(DATABASE_URL);
+  client.connect();// подключаемся к БД
+
+  client
+    .query(
+      'select * from user_article_feed WHERE article_id = ($1) and user_id = ($2)', [articleId, userId],
+    )
+    .then((result) => {
+      // если пустое, значит пользователь ничего со статьей еще не делал
+      if (!result.rows.length) {
+        client.query('INSERT INTO user_article_feed (user_id, article_id, watched) VALUES ($1, $2, $3)', [userId, articleId, true])
+          .then((resIns) => {
+            res.send({ message: 'Добавлена запись', data: resIns.rows });
+            return client.end();
+          })
+          .catch((err) => {
+            client.end();
+            next(err);
+          });
+      } else {
+        // если что-то возвращается, значит пользователь что-то уже делал со статьей
+        client.query('UPDATE user_article_feed SET liked = true WHERE article_id = ($1) and user_id = ($2)', [articleId, userId])
+          .then((resUpd) => {
+            res.send({ message: 'Обновлена запись', data: resUpd.rows });
+            return client.end();
+          })
+          .catch((err) => {
+            client.end();
+            next(err);
+          });
+      }
+
+      // res.send({ message: 'Не добавлена запись, надо апдейтить', data: result.rows });
     })
     .catch((err) => {
       client.end();
@@ -179,4 +278,5 @@ module.exports = {
   deleteArticle,
   postArticle,
   getArticlesAll,
+  likeArticle,
 };
