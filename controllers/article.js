@@ -155,22 +155,24 @@ const getArticlesAll = (req, res, next) => {
         FROM article
         LEFT JOIN user_article_feed ON user_article_feed.article_id = article.id
         WHERE article.posted = 'true'
-        ORDER BY article.date_create desc`;
+        ORDER BY article.date_create desc, article.id desc
+        LIMIT 10 OFFSET ($1)`;
 
   const likedArticles = `SELECT article.id, article.date_create, article.image, article.theme, article.category, article.text_art, user_article_feed.liked, user_article_feed.watched
         FROM article
         LEFT JOIN user_article_feed ON user_article_feed.article_id = article.id
         WHERE article.posted = 'true' and user_article_feed.liked = true
-        ORDER BY article.date_create desc`;
+        ORDER BY article.date_create desc, article.id desc
+        LIMIT 10 OFFSET ($1)`;
 
-  const { filter } = req.query;
+  const { filter, offset } = req.query;
 
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
 
   client
     .query(
-      filter === 'liked' ? likedArticles : anyArticles,
+      filter === 'liked' ? likedArticles : anyArticles, [offset]
     )
     .then((result) => {
       res.send({ data: result.rows, status: 200 });
