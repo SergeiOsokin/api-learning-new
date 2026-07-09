@@ -93,7 +93,7 @@ const createUser = (req, res, next) => {
   client.query('SELECT email from users where email=$1', [email.toLowerCase()])
     .then((select) => {
       if (select.rows.length >= 1) {
-        res.send({ message: alreadyExist });
+        res.send({ error: alreadyExist });
         client.end();
       }
       // client.connect();// подключаемся к БД

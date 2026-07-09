@@ -1,10 +1,13 @@
 const { celebrate, Joi } = require('celebrate');
 
+const latinValidation = Joi.string().required().min(10).max(2000)
+  .regex(/^[\w\s,:%'"/.()!?-]+$/i);
+
 const validationCreateArticle = celebrate({
   body: Joi.object().keys({
     theme: Joi.string().required().max(50),
     category: Joi.string().required().max(50),
-    text_art: Joi.string().required().max(2000),
+    textArt: latinValidation,
   }).unknown(true),
   headers: Joi.object().keys({
     cookie: Joi.string().required(),
@@ -15,6 +18,7 @@ const validationCreateArticle = celebrate({
     'string.max': '{#label} Максимум {#limit} символов',
     'string.min': '{#label} Минимум {#limit} символа',
     'string.required': '{#label} Обязательный параметр',
+    'string.pattern.base': 'Проверьте текст статьи - разрешена только латиница и символы: ,.()!?-:%"',
   },
 });
 
@@ -25,7 +29,7 @@ const validationPatchArticle = celebrate({
   body: Joi.object().keys({
     theme: Joi.string().required().max(50),
     category: Joi.string().required().max(50),
-    text_art: Joi.string().required().max(2000),
+    textArt: latinValidation,
   }).unknown(true),
   headers: Joi.object().keys({
     cookie: Joi.string().required(),
@@ -36,6 +40,7 @@ const validationPatchArticle = celebrate({
     'string.max': '{#label} Максимум {#limit} символов',
     'string.min': '{#label} Минимум {#limit} символа',
     'string.required': '{#label} Обязательный параметр',
+    'string.pattern.base': 'Проверьте текст статьи - разрешена только латиница и символы: ,.()!?-:%"',
   },
 });
 

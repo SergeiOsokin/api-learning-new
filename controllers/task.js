@@ -74,7 +74,6 @@ const getTaskTeacher = (req, res, next) => {
 };
 
 const appointTask = (req, res, next) => {
-  console.log(req);
   const { taskId } = req.params;
   const userEmail = req.body.users.split(';');
   const userEmail1 = userEmail[0];
@@ -104,8 +103,6 @@ const appointTask = (req, res, next) => {
 };
 
 const unappointTask = (req, res, next) => {
-  console.log(req.body.user);
-  console.log(req.params);
   const { taskId } = req.params;
   const userId = req.body.user;
   const client = new Client(DATABASE_URL);

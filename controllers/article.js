@@ -1,19 +1,21 @@
 const { Client } = require('pg');
+const sanitizeHtml = require('sanitize-html');
 const { DATABASE_URL } = require('../config');
 
 const createArticle = (req, res, next) => {
-  const article = req.body;
+  const { theme, category, textArt } = req.body;
+
   const userId = req.user._id;
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
 
   client
     .query(
-      'INSERT INTO article (user_id, image, theme, category, text_art) VALUES ($1, $2, $3, $4, $5)',
-      [userId, article.image, article.theme, article.category, article.text_art],
+      'INSERT INTO article (user_id, theme, category, text_art) VALUES ($1, $2, $3, $4)',
+      [userId, sanitizeHtml(theme), sanitizeHtml(category), sanitizeHtml(textArt)],
     )
     .then(() => {
-      res.send({ message: 'Статья создана', status: 200 });
+      res.send({ message: 'Статья создана. Можете ее опубликовать', status: 200 });
       client.end();
     })
     .catch((err) => {
@@ -75,7 +77,7 @@ const patchArticle = (req, res, next) => {
   client.connect();// подключаемся к БД
   // client.query('UPDATE article SET last_update = ($1), image = ($2), theme = ($3), category = ($4), text_art = ($5) WHERE id= ($6) and user_id = ($7)',
   client.query('UPDATE article SET image = ($1), theme = ($2), category = ($3), text_art = ($4) WHERE id= ($5) and user_id = ($6)',
-    [article.image, article.theme, article.category, article.text_art, articleId, userId])
+    [article.image, article.theme, article.category, article.textArt, articleId, userId])
     .then(() => {
       client.query('SELECT * FROM article  WHERE id= ($1) and user_id = ($2)', [articleId, userId])
         .then((result) => {

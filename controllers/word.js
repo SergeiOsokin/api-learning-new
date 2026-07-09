@@ -77,11 +77,12 @@ const patchWord = (req, res, next) => {
   const {
     id, russianWord, foreignWord, categoryWordId,
   } = req.body;
+  const userId = req.user._id;
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
 
   client
-    .query('UPDATE words SET foreign_word = ($1), russian_word = ($2), category_word_id = ($3) WHERE id=($4)', [foreignWord, russianWord, categoryWordId, id])
+    .query('UPDATE words SET foreign_word = ($1), russian_word = ($2), category_word_id = ($3) WHERE id=($4) and user_id = ($5)', [foreignWord, russianWord, categoryWordId, id, userId])
     .then(() => {
       res.send({ message: 'Успешно изменено' });
       client.end();
@@ -99,10 +100,10 @@ const addWord = (req, res, next) => {
   client.connect();// подключаемся к БД
 
   client
-    .query('select foreign_word from words where foreign_word = ($1)', [word.foreignWord])
+    .query('select foreign_word from words where foreign_word = ($1) and user_id = ($2)', [word.foreignWord, userId])
     .then((result) => {
       if (result.rowCount !== 0) {
-        res.send({ message: 'У вас уже есть это слово на инстранном' });
+        res.send({ error: 'У вас уже есть это слово на инстранном' });
         client.end();
         return;
       }
@@ -124,10 +125,11 @@ const addWord = (req, res, next) => {
 };
 
 const deleteWord = (req, res, next) => {
+  const userId = req.user._id;
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
   client
-    .query('DELETE FROM words WHERE id = ($1)', [req.params.wordId])
+    .query('DELETE FROM words WHERE id = ($1) and user_id = ($2)', [req.params.wordId, userId])
     .then((result) => {
       if (!result.rowCount) {
         res.send({ error: 'Слово не найдено' });
