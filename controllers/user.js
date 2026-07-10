@@ -16,13 +16,13 @@ const login = (req, res, next) => {
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
   const { email, password: passwordCame } = req.body;
-  client.query('SELECT id, email, password from users where email=$1', [email.toLowerCase()])
+  client.query('SELECT id, email, password, type_u from users where email=$1', [email.toLowerCase()])
     .then((select) => {
       if (!select.rows.length) {
         client.end();
         throw new BadAuthData(notFoundUserEmail);
       }
-      const { id } = select.rows[0];
+      const { id, type_u } = select.rows[0];
       const hash = select.rows[0].password;
 
       bcrypt.compare(passwordCame, hash)
@@ -39,7 +39,7 @@ const login = (req, res, next) => {
             SameSite: 'None',
             Secure: true,
           })
-            .send({ user: email })
+            .send({ user: email, type: type_u })
             .end();
           client.end();
         })
@@ -88,19 +88,19 @@ const createUser = (req, res, next) => {
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
   const {
-    email, password,
+    email, password, type,
   } = req.body;
   client.query('SELECT email from users where email=$1', [email.toLowerCase()])
     .then((select) => {
       if (select.rows.length >= 1) {
-        res.send({ message: alreadyExist });
+        res.send({ error: alreadyExist });
         client.end();
       }
       // client.connect();// подключаемся к БД
       bcrypt.hash(password, 10)
         .then((hash) => {
           client
-            .query('INSERT INTO users (email, password) values ($1, $2)', [email.toLowerCase(), hash]) // записываем информацию о пользователе
+            .query('INSERT INTO users (email, password, type_u) values ($1, $2, $3)', [email.toLowerCase(), hash, type]) // записываем информацию о пользователе
             .then(() => {
               res.send({ message: regSuccsessful });
             })

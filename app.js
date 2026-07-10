@@ -29,6 +29,7 @@ const routerTlg = require('./routes/tlg');
 const routerLk = require('./routes/lk');
 const STEP = require('./middlewares/actions');
 const routerAi = require('./routes/ai');
+const routerArticle = require('./routes/article');
 
 const whitelist = [
   'http://localhost:8080',
@@ -85,6 +86,7 @@ app.use('/api/notes', auth, routerNotes);
 app.use('/api/category', auth, routerCategory);
 app.use('/api/task', auth, routerTaks);
 app.use('/api/homework', auth, routerHomework);
+app.use('/api/article', auth, routerArticle);
 
 app.use('/api/ai', auth, routerAi);
 

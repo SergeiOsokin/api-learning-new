@@ -30,11 +30,7 @@ const getWords = (req, res, next) => {
   FROM words
   WHERE words.user_id = (select id from users where email = ($1) and token = ($2))`;
 
-  // const userId = req.user._id;
   const { token, email } = req.body.form;
-
-  // console.log(req.body.form)
-
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
 

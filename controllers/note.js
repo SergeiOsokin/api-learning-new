@@ -38,7 +38,6 @@ const getNoteThemes = (req, res, next) => {
 
 // Получить одну заметку
 const getNote = (req, res, next) => {
-  // console.log('тут');
   const userId = req.user._id;
   const { noteId } = req.params;
   const client = new Client(DATABASE_URL);
