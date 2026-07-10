@@ -1,6 +1,7 @@
 const { Client } = require('pg');
 const sanitizeHtml = require('sanitize-html');
 const { DATABASE_URL } = require('../config');
+const { badWord, replacements } = require('../const');
 
 const createArticle = (req, res, next) => {
   const { theme, category, textArt } = req.body;

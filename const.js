@@ -17,6 +17,14 @@ const problemPassword = 'Проблема при обновлении. Паро�
 const editTypeUser = 'Тип пользователя изменен';
 const someError = 'Что-то пошло не так';
 
+const badWord = ['Shit', 'Crap', 'Dumb', 'Рrick', 'cock', 'penis', 'knob',
+  'Fuck', 'Dick', 'Asshole', 'Moron', 'jerk', 'Douchebag', 'Faggot', 'fag', 'Son of a bitch',
+  'Old Fart', 'Bastard', 'Bitch', 'slut', 'whore', 'Cunt', 'pussy', 'Bullshit', 'ass',
+  'nuts', 'Screw it',
+];
+
+const replacements = ['badWord'];
+
 module.exports = {
   resourceNotFound,
   notFoundUserEmail,
@@ -36,4 +44,6 @@ module.exports = {
   problemPassword,
   editTypeUser,
   someError,
+  badWord,
+  replacements,
 };
