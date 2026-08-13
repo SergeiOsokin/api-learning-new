@@ -23,6 +23,19 @@ const badWord = ['Shit', 'Crap', 'Dumb', 'Рrick', 'cock', 'penis', 'knob',
   'nuts', 'Screw it',
 ];
 
+const doments = [
+  // '@gmail.com',
+  '@mail.ru',
+  '@xmail.ru',
+  '@yandex.ru',
+  '@bk.ru',
+  '@list.ru',
+  // '@icloud.com',
+  '@inbox.ru',
+  // '@yahoo.com',
+  // '@outlook.com',
+];
+
 const replacements = ['badWord'];
 
 module.exports = {
@@ -46,4 +59,5 @@ module.exports = {
   someError,
   badWord,
   replacements,
+  doments,
 };

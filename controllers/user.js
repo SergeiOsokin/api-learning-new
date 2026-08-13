@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { Client } = require('pg');
-const { notFoundUserEmail, wrongPasswordOrLogin } = require('../const');
+const { notFoundUserEmail, wrongPasswordOrLogin, doments } = require('../const');
 const { BadAuthData, NotFound } = require('../errors/errors');
 const { getPassword } = require('../middlewares/genPassword');
 // const { findUserByCredentials } = require('../models/user');
@@ -85,36 +85,40 @@ const resetPassword = (req, res, next) => {
 };
 
 const createUser = (req, res, next) => {
-  const client = new Client(DATABASE_URL);
-  client.connect();// подключаемся к БД
   const {
     email, password, type,
   } = req.body;
-  client.query('SELECT email from users where email=$1', [email.toLowerCase()])
-    .then((select) => {
-      if (select.rows.length >= 1) {
-        res.send({ error: alreadyExist });
+
+  if (doments.some((sub) => email.includes(sub))) {
+    const client = new Client(DATABASE_URL);
+    client.connect();// подключаемся к БД
+    client.query('SELECT email from users where email=$1', [email.toLowerCase()])
+      .then((select) => {
+        if (select.rows.length >= 1) {
+          res.send({ error: alreadyExist });
+          client.end();
+        }
+        bcrypt.hash(password, 10)
+          .then((hash) => {
+            client
+              .query('INSERT INTO users (email, password, type_u) values ($1, $2, $3)', [email.toLowerCase(), hash, type]) // записываем информацию о пользователе
+              .then(() => {
+                res.send({ message: regSuccsessful });
+              })
+              .catch((err) => {
+                next(err);
+              })
+              .then(() => client.end());
+          })
+          .catch(next);
+      })
+      .catch((err) => {
         client.end();
-      }
-      // client.connect();// подключаемся к БД
-      bcrypt.hash(password, 10)
-        .then((hash) => {
-          client
-            .query('INSERT INTO users (email, password, type_u) values ($1, $2, $3)', [email.toLowerCase(), hash, type]) // записываем информацию о пользователе
-            .then(() => {
-              res.send({ message: regSuccsessful });
-            })
-            .catch((err) => {
-              next(err);
-            })
-            .then(() => client.end());
-        })
-        .catch(next);
-    })
-    .catch((err) => {
-      client.end();
-      next(err);
-    });
+        next(err);
+      });
+  } else {
+    res.send({ error: `Разрешена только почта от: ${doments}. Sorry=(` });
+  }
 };
 
 const getUser = (req, res, next) => {
