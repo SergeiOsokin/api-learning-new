@@ -30,6 +30,7 @@ const routerLk = require('./routes/lk');
 const STEP = require('./middlewares/actions');
 const routerAi = require('./routes/ai');
 const routerArticle = require('./routes/article');
+const routerBaseTest = require('./routes/baseTest');
 
 const whitelist = [
   'http://localhost:8080',
@@ -89,6 +90,8 @@ app.use('/api/homework', auth, routerHomework);
 app.use('/api/article', auth, routerArticle);
 
 app.use('/api/ai', auth, routerAi);
+
+app.use('/api/test/', routerBaseTest);
 
 app.delete('/api/deletecookie', auth, deleteCookie);
 // видеозвонки

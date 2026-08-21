@@ -16,6 +16,7 @@ const wrongPassword = 'Старый пароль введен неверно';
 const problemPassword = 'Проблема при обновлении. Пароль не изменен';
 const editTypeUser = 'Тип пользователя изменен';
 const someError = 'Что-то пошло не так';
+const notTest = 'Тесты пока обновляются';
 
 const badWord = ['Shit', 'Crap', 'Dumb', 'Рrick', 'cock', 'penis', 'knob',
   'Fuck', 'Dick', 'Asshole', 'Moron', 'jerk', 'Douchebag', 'Faggot', 'fag', 'Son of a bitch',
@@ -60,4 +61,5 @@ module.exports = {
   badWord,
   replacements,
   doments,
+  notTest,
 };
