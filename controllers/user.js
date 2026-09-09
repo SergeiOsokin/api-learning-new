@@ -37,7 +37,8 @@ const login = (req, res, next) => {
             domain: '',
             httpOnly: true,
             SameSite: 'None',
-            Secure: true,
+            secure: true,
+            maxAge: 7 * 24 * 60 * 60 * 1000,
           })
             .send({ user: email, type: type_u })
             .end();
