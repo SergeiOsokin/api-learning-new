@@ -16,12 +16,11 @@ const getTest = (req, res, next) => {
 
   const client = new Client(DATABASE_URL);
   client.connect();// подключаемся к БД
-
   client.query(sqlReq, [theme])
     // eslint-disable-next-line consistent-return
     .then((result) => {
       if (result.rowCount === 0) return res.send({ message: notTest, data: [] });
-      res.set({ 'Cache-Control': 'max-age=6000, immutable, private' }).send({ data: result.rows.data.data });
+      res.set({ 'Cache-Control': 'max-age=6000, immutable, private' }).send({ data: result.rows });
       client.end();
     })
     .catch((err) => {
