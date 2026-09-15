@@ -16,11 +16,25 @@ const wrongPassword = 'Старый пароль введен неверно';
 const problemPassword = 'Проблема при обновлении. Пароль не изменен';
 const editTypeUser = 'Тип пользователя изменен';
 const someError = 'Что-то пошло не так';
+const notTest = 'Тесты пока обновляются';
 
 const badWord = ['Shit', 'Crap', 'Dumb', 'Рrick', 'cock', 'penis', 'knob',
   'Fuck', 'Dick', 'Asshole', 'Moron', 'jerk', 'Douchebag', 'Faggot', 'fag', 'Son of a bitch',
   'Old Fart', 'Bastard', 'Bitch', 'slut', 'whore', 'Cunt', 'pussy', 'Bullshit', 'ass',
   'nuts', 'Screw it',
+];
+
+const doments = [
+  // '@gmail.com',
+  '@mail.ru',
+  '@xmail.ru',
+  '@yandex.ru',
+  '@bk.ru',
+  '@list.ru',
+  // '@icloud.com',
+  '@inbox.ru',
+  // '@yahoo.com',
+  // '@outlook.com',
 ];
 
 const replacements = ['badWord'];
@@ -46,4 +60,6 @@ module.exports = {
   someError,
   badWord,
   replacements,
+  doments,
+  notTest,
 };
