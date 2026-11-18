@@ -27,7 +27,8 @@ const getWords = (req, res, next) => {
       // eslint-disable-next-line consistent-return
       .then((result) => {
         if (result.rowCount === 0) return res.send({ message: notWords, data: [] });
-        res.set({ 'Cache-Control': 'max-age=600, immutable, private' }).send({ data: result.rows });
+        // res.set({ 'Cache-Control': 'max-age=600, immutable, private' }).send({ data: result.rows });
+        res.send({ data: result.rows });
         client.end();
       })
       .catch((err) => {
@@ -39,7 +40,8 @@ const getWords = (req, res, next) => {
       // eslint-disable-next-line consistent-return
       .then((result) => {
         if (result.rowCount === 0) return res.send({ message: notWords, data: [] });
-        res.set({ 'Cache-Control': 'max-age=600, immutable, private' }).send({ data: result.rows });
+        // res.set({ 'Cache-Control': 'max-age=600, immutable, private' }).send({ data: result.rows });
+        res.send({ data: result.rows });
         client.end();
       })
       .catch((err) => {

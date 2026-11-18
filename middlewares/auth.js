@@ -7,7 +7,9 @@ const auth = (req, res, next) => {
   const cookie = req.cookies.jwt;
   if (!cookie) { // проверяем что заголовок есть
     // throw new NotHeaders(needHeader);
-    res.status(401).send({ error: needHeader });
+    res.status(401);
+    res.send({ error: needHeader });
+    return;
   }
   const token = cookie; // тут извлекаем токен
   let payload;// так сделали из-за области видимости
@@ -16,7 +18,9 @@ const auth = (req, res, next) => {
     payload = jwt.verify(token, JWT_SECRET);
   } catch (err) {
     // throw new BadToken(badToken);
-    res.status(401).send({ error: badToken });
+    res.status(401);
+    res.send({ error: badToken });
+    return;
   }
   req.user = payload; // записываем пейлоуд в объект запроса
   return next();

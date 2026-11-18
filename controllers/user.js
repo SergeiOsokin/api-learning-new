@@ -87,7 +87,7 @@ const resetPassword = (req, res, next) => {
 
 const createUser = (req, res, next) => {
   const {
-    email, password, type,
+    email, password, type, consent
   } = req.body;
 
   if (doments.some((sub) => email.includes(sub))) {
@@ -102,7 +102,7 @@ const createUser = (req, res, next) => {
         bcrypt.hash(password, 10)
           .then((hash) => {
             client
-              .query('INSERT INTO users (email, password, type_u) values ($1, $2, $3)', [email.toLowerCase(), hash, type]) // записываем информацию о пользователе
+              .query('INSERT INTO users (email, password, type_u, privacy) values ($1, $2, $3, $4)', [email.toLowerCase(), hash, type, consent]) // записываем информацию о пользователе
               .then(() => {
                 res.send({ message: regSuccsessful });
               })

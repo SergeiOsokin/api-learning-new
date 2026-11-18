@@ -73,7 +73,8 @@ app.use(requestLogger);
 // }))
 
 app.get('/api/checkauth', auth, (req, res, next) => {
-  res.status(200).send({});
+  res.status(200);
+  res .send({});
 });
 
 app.post('/api/signup', validationCreateUser, createUser);
