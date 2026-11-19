@@ -43,6 +43,7 @@ const login = (req, res, next) => {
             .send({ user: email, type: type_u })
             .end();
           client.end();
+          return;
         })
         .catch(next);
     })
@@ -62,6 +63,11 @@ const resetPassword = (req, res, next) => {
         client.end();
         throw new NotFound(notFoundUserEmail);
       }
+      if (!doments.some((sub) => email.includes(sub))) {
+        res.send({ error: `Создайте новый аккаунт. Разрешена только почта от: ${doments}.` });
+        return;
+      }
+
       const pass = getPassword(10);
       console.log(pass);
       bcrypt.hash(pass, 10)
@@ -71,6 +77,7 @@ const resetPassword = (req, res, next) => {
             .then(() => {
               sendEmail(email, 'Сброс пароля learnew', `Ваш новый пароль ${pass}`);
               res.send({ message: `${resetPass} ${email}` });
+              return;
             })
             .catch((err) => {
               next(err);
@@ -98,6 +105,7 @@ const createUser = (req, res, next) => {
         if (select.rows.length >= 1) {
           res.send({ error: alreadyExist });
           client.end();
+          return;
         }
         bcrypt.hash(password, 10)
           .then((hash) => {
@@ -105,6 +113,7 @@ const createUser = (req, res, next) => {
               .query('INSERT INTO users (email, password, type_u, privacy) values ($1, $2, $3, $4)', [email.toLowerCase(), hash, type, consent]) // записываем информацию о пользователе
               .then(() => {
                 res.send({ message: regSuccsessful });
+                return;
               })
               .catch((err) => {
                 next(err);
@@ -119,22 +128,23 @@ const createUser = (req, res, next) => {
       });
   } else {
     res.send({ error: `Разрешена только почта от: ${doments}. Sorry=(` });
+    return;
   }
 };
 
 const getUser = (req, res, next) => {
-  const client = new Client(DATABASE_URL);
-  client.connect();// подключаемся к БД
+  // const client = new Client(DATABASE_URL);
+  // client.connect();// подключаемся к БД
 
-  client.query('SELECT * from users')
-    .then((select) => {
-      res.send({ select });
-      return client.end();
-    })
-    .catch((err) => {
-      client.end();
-      next(err);
-    });
+  // client.query('SELECT * from users')
+  //   .then((select) => {
+  //     res.send({ select });
+  //     return client.end();
+  //   })
+  //   .catch((err) => {
+  //     client.end();
+  //     next(err);
+  //   });
 };
 
 module.exports = {

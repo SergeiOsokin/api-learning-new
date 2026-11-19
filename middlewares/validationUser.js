@@ -7,6 +7,8 @@ const validationCreateUser = celebrate({
   body: Joi.object().keys({
     email: emailValidation,
     password: Joi.string().required().min(6).max(30),
+    type: Joi.required(),
+    consent: Joi.boolean().valid(true).truthy('on').required(),
   }).unknown(true),
 }, {
   abortEarly: false,
@@ -15,6 +17,7 @@ const validationCreateUser = celebrate({
     'string.min': '{#label} Минимум {#limit} символа',
     'string.required': '{#label} Обязательный параметр',
     'string.pattern.base': '{#label} Некорректный email',
+    'boolean.base': 'Требуется согласие с условиями использования и политикой конфиденциальности',
   },
 });
 
